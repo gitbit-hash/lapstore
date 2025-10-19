@@ -34,7 +34,7 @@ async function main() {
                 name: 'ASUS ROG Zephyrus G14',
                 description: 'Powerful 14-inch gaming laptop with AMD Ryzen 9 and RTX 4060',
                 price: 1499.99,
-                images: ['/images/laptop1-1.jpg', '/images/laptop1-2.jpg'],
+                images: ['/images/products/gaming_laptops.jpg', '/images/products/gaming_laptops_2.jpg'],
                 categoryId: gamingLaptops!.id,
                 inventory: 15,
                 specifications: {
@@ -50,7 +50,7 @@ async function main() {
                 name: 'Dell XPS 13',
                 description: 'Premium business laptop with stunning InfinityEdge display',
                 price: 1199.99,
-                images: ['/images/laptop2-1.jpg', '/images/laptop2-2.jpg'],
+                images: ['/images/products/business_laptops.jpg', '/images/products/business_laptops_2.jpg'],
                 categoryId: businessLaptops!.id,
                 inventory: 25,
                 specifications: {
@@ -66,7 +66,7 @@ async function main() {
                 name: 'Alienware AW3423DW',
                 description: '34-inch QD-OLED gaming monitor with 175Hz refresh rate',
                 price: 1299.99,
-                images: ['/images/monitor1-1.jpg', '/images/monitor1-2.jpg'],
+                images: ['/images/products/monitors.jpg', '/images/products/monitors_2.jpg'],
                 categoryId: monitors!.id,
                 inventory: 8,
                 specifications: {
@@ -82,7 +82,7 @@ async function main() {
                 name: 'Lenovo Legion 5 Pro',
                 description: '16-inch gaming laptop with Ryzen 7 and RTX 4070',
                 price: 1699.99,
-                images: ['/images/laptop3-1.jpg', '/images/laptop3-2.jpg'],
+                images: ['/images/products/gaming_laptops.jpg', '/images/products/gaming_laptops_2.jpg'],
                 categoryId: gamingLaptops!.id,
                 inventory: 12,
                 specifications: {
@@ -98,7 +98,7 @@ async function main() {
                 name: 'Apple MacBook Pro 16"',
                 description: 'Professional laptop with M3 Pro chip for extreme performance',
                 price: 2499.99,
-                images: ['/images/laptop4-1.jpg', '/images/laptop4-2.jpg'],
+                images: ['/images/products/business_laptops.jpg', '/images/products/business_laptops_2.jpg'],
                 categoryId: businessLaptops!.id,
                 inventory: 10,
                 specifications: {
