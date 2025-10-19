@@ -5,20 +5,7 @@ import { useState } from 'react'
 import { StarIcon } from '@heroicons/react/24/solid'
 import { StarIcon as StarOutline } from '@heroicons/react/24/outline'
 import Image from 'next/image'
-
-interface Product {
-    id: string
-    name: string
-    description: string
-    price: number
-    images: string[]
-    category: {
-        name: string
-    }
-    averageRating: number
-    reviewCount: number
-    inventory: number
-}
+import { Product } from '../types'
 
 interface ProductCardProps {
     product: Product
@@ -130,7 +117,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </h3>
 
                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                    {product.description}
+                    {product.description || 'No description available.'}
                 </p>
 
                 {/* Rating */}
