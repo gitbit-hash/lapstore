@@ -1,12 +1,15 @@
-// app/components/Header.tsx - Add navigation links
+// app/components/Header.tsx - Updated with cart
 'use client'
 
 import { ShoppingCartIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import { useCartStore } from '../stores/cartStore'
 
 export default function Header() {
+    const { toggleCart, getTotalItems } = useCartStore()
+
     return (
-        <header className="bg-white shadow-sm border-b">
+        <header className="bg-white shadow-sm border-b sticky top-0 z-30">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
@@ -36,12 +39,19 @@ export default function Header() {
 
                     {/* Cart & Actions */}
                     <div className="flex items-center space-x-4">
-                        <button className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors">
+                        {/* Cart Button */}
+                        <button
+                            onClick={toggleCart}
+                            className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors group"
+                        >
                             <ShoppingCartIcon className="h-6 w-6" />
-                            <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                                0
-                            </span>
+                            {getTotalItems() > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center group-hover:bg-blue-700 transition-colors">
+                                    {getTotalItems()}
+                                </span>
+                            )}
                         </button>
+
                         <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
                             Sign In
                         </button>

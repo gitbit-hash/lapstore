@@ -1,8 +1,9 @@
-// app/components/AddToCartButton.tsx
+// app/components/AddToCartButton.tsx - Updated with cart store
 'use client'
 
 import { useState } from 'react'
 import { CartProduct } from '../types'
+import { useCartStore } from '../stores/cartStore'
 
 interface AddToCartButtonProps {
     product: CartProduct
@@ -11,6 +12,9 @@ interface AddToCartButtonProps {
 export default function AddToCartButton({ product }: AddToCartButtonProps) {
     const [quantity, setQuantity] = useState(1)
     const [isAdding, setIsAdding] = useState(false)
+    const { addItem, getItemCount } = useCartStore()
+
+    const currentCartQuantity = getItemCount(product.id)
 
     const handleAddToCart = async () => {
         if (product.inventory === 0) return
@@ -20,17 +24,17 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 500))
 
-        // TODO: Integrate with cart store
-        console.log(`Added ${quantity} of ${product.name} to cart`)
+        // Add to cart store
+        addItem(product, quantity)
 
         setIsAdding(false)
 
-        // Show success message
-        alert(`Added ${product.name} to cart!`)
+        // Reset quantity
+        setQuantity(1)
     }
 
     const incrementQuantity = () => {
-        if (quantity < product.inventory) {
+        if (quantity < (product.inventory - currentCartQuantity)) {
             setQuantity(prev => prev + 1)
         }
     }
@@ -41,15 +45,27 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
         }
     }
 
+    const availableQuantity = product.inventory - currentCartQuantity
+
     return (
         <div className="space-y-4">
+            {/* Cart Status */}
+            {currentCartQuantity > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-sm text-blue-700">
+                        <strong>{currentCartQuantity}</strong> in cart •{' '}
+                        <strong>{availableQuantity}</strong> available
+                    </p>
+                </div>
+            )}
+
             {/* Quantity Selector */}
             <div className="flex items-center space-x-4">
                 <span className="text-sm font-medium text-gray-700">Quantity:</span>
                 <div className="flex items-center border border-gray-300 rounded-lg">
                     <button
                         onClick={decrementQuantity}
-                        disabled={quantity <= 1}
+                        disabled={quantity <= 1 || availableQuantity === 0}
                         className="px-3 py-1 text-gray-600 hover:text-gray-700 disabled:text-gray-300 disabled:cursor-not-allowed"
                     >
                         -
@@ -59,21 +75,21 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
                     </span>
                     <button
                         onClick={incrementQuantity}
-                        disabled={quantity >= product.inventory}
+                        disabled={quantity >= availableQuantity || availableQuantity === 0}
                         className="px-3 py-1 text-gray-600 hover:text-gray-700 disabled:text-gray-300 disabled:cursor-not-allowed"
                     >
                         +
                     </button>
                 </div>
                 <span className="text-sm text-gray-500">
-                    {product.inventory} available
+                    {availableQuantity} available
                 </span>
             </div>
 
             {/* Add to Cart Button */}
             <button
                 onClick={handleAddToCart}
-                disabled={product.inventory === 0 || isAdding}
+                disabled={availableQuantity === 0 || isAdding}
                 className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
             >
                 {isAdding ? (
@@ -84,6 +100,8 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
                         </svg>
                         Adding to Cart...
                     </>
+                ) : availableQuantity === 0 ? (
+                    'Out of Stock'
                 ) : (
                     `Add to Cart - $${(product.price * quantity).toFixed(2)}`
                 )}

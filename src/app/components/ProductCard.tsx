@@ -1,4 +1,4 @@
-// app/components/ProductCard.tsx - Updated with Link
+// app/components/ProductCard.tsx - Update the Add to Cart button
 'use client'
 
 import { useState } from 'react'
@@ -7,6 +7,7 @@ import { StarIcon as StarOutline } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Product } from '../types'
+import { useCartStore } from '../stores/cartStore'
 
 interface ProductCardProps {
     product: Product
@@ -15,6 +16,8 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
     const [imageError, setImageError] = useState(false)
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
+    const [isAdding, setIsAdding] = useState(false)
+    const { addItem } = useCartStore()
 
     const renderStars = (rating: number) => {
         return Array.from({ length: 5 }).map((_, i) => (
@@ -22,6 +25,26 @@ export default function ProductCard({ product }: ProductCardProps) {
                 ? <StarIcon key={i} className="h-4 w-4 text-yellow-400" />
                 : <StarOutline key={i} className="h-4 w-4 text-yellow-400" />
         ))
+    }
+
+    const handleAddToCart = async (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+
+        if (product.inventory === 0) return
+
+        setIsAdding(true)
+        await new Promise(resolve => setTimeout(resolve, 300))
+
+        addItem({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            images: product.images,
+            inventory: product.inventory
+        })
+
+        setIsAdding(false)
     }
 
     const nextImage = (e: React.MouseEvent) => {
@@ -140,16 +163,18 @@ export default function ProductCard({ product }: ProductCardProps) {
                         </div>
 
                         <button
-                            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                            disabled={product.inventory === 0}
-                            onClick={(e) => {
-                                e.preventDefault()
-                                e.stopPropagation()
-                                // TODO: Add to cart functionality
-                                alert(`Added ${product.name} to cart!`)
-                            }}
+                            onClick={handleAddToCart}
+                            disabled={product.inventory === 0 || isAdding}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center"
                         >
-                            Add to Cart
+                            {isAdding ? (
+                                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            ) : (
+                                'Add to Cart'
+                            )}
                         </button>
                     </div>
                 </div>
