@@ -1,4 +1,4 @@
-// app/products/page.tsx
+// app/products/page.tsx - Updated with awaited searchParams
 import ProductGrid from '../components/ProductGrid'
 import ProductFilters from '../components/ProductFilters'
 import SearchBar from '../components/SearchBar'
@@ -6,12 +6,15 @@ import { getProducts } from '../actions/products'
 import { getCategories } from '../actions/categories'
 
 interface ProductsPageProps {
-    searchParams: { [key: string]: string | string[] | undefined }
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+    // Await the searchParams promise
+    const resolvedSearchParams = await searchParams
+
     // Safely handle searchParams
-    const safeSearchParams = searchParams || {}
+    const safeSearchParams = resolvedSearchParams || {}
 
     // Convert searchParams to the expected filters with proper null checks
     const category = Array.isArray(safeSearchParams.category) ? safeSearchParams.category[0] : safeSearchParams.category

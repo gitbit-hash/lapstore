@@ -1,4 +1,4 @@
-// app/types/index.ts
+// app/types/index.ts - Update with more specific types
 export interface Product {
     id: string
     name: string
@@ -19,6 +19,21 @@ export interface Product {
     updatedAt: Date
 }
 
+export interface ProductDetail extends Product {
+    reviews: Review[]
+}
+
+export interface Review {
+    id: string
+    rating: number
+    comment: string | null
+    createdAt: Date
+    user: {
+        name: string | null
+        image: string | null
+    }
+}
+
 export interface Category {
     id: string
     name: string
@@ -33,4 +48,13 @@ export interface ProductFilters {
     minPrice?: number
     maxPrice?: number
     categories?: string
+}
+
+// Simple product type for cart and listings
+export interface CartProduct {
+    id: string
+    name: string
+    price: number
+    images: string[]
+    inventory: number
 }

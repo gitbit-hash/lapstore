@@ -1,7 +1,8 @@
-// app/components/Header.tsx
+// app/components/Header.tsx - Add navigation links
 'use client'
 
 import { ShoppingCartIcon } from '@heroicons/react/24/outline'
+import Link from 'next/link'
 
 export default function Header() {
     return (
@@ -10,31 +11,38 @@ export default function Header() {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <div className="flex items-center">
-                        <h1 className="text-2xl font-bold text-blue-600">TechHaven</h1>
+                        <Link href="/">
+                            <h1 className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
+                                TechHaven
+                            </h1>
+                        </Link>
                     </div>
 
                     {/* Navigation */}
                     <nav className="hidden md:flex space-x-8">
-                        <a href="/" className="text-gray-700 hover:text-blue-600 font-medium">
+                        <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                             Home
-                        </a>
-                        <a href="/products" className="text-gray-700 hover:text-blue-600 font-medium">
+                        </Link>
+                        <Link href="/products" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                             All Products
-                        </a>
-                        <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">
-                            Categories
-                        </a>
+                        </Link>
+                        <Link href="/products?categories=gaming-laptops" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                            Gaming
+                        </Link>
+                        <Link href="/products?categories=business-laptops" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                            Business
+                        </Link>
                     </nav>
 
                     {/* Cart & Actions */}
                     <div className="flex items-center space-x-4">
-                        <button className="relative p-2 text-gray-700 hover:text-blue-600">
+                        <button className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors">
                             <ShoppingCartIcon className="h-6 w-6" />
                             <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                                 0
                             </span>
                         </button>
-                        <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                        <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
                             Sign In
                         </button>
                     </div>
