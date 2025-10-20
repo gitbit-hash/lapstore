@@ -92,7 +92,7 @@ model Order {
   orderItems   OrderItem[]
   total        Float
   status       OrderStatus @default(PENDING)
-  stripePaymentIntentId String? @unique
+  paymentMethod String     @default("COD") // COD, CARD, BANK, etc.
   shippingAddress Json
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
@@ -154,6 +154,7 @@ enum Role {
 
 enum OrderStatus {
   PENDING
+  CONFIRMED
   PROCESSING
   SHIPPED
   DELIVERED

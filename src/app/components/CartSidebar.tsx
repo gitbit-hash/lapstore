@@ -1,10 +1,11 @@
-// app/components/CartSidebar.tsx
+// app/components/CartSidebar.tsx - Updated with correct router import
 'use client'
 
 import { useCartStore } from '../stores/cartStore'
 import { XMarkIcon, ShoppingCartIcon } from '@heroicons/react/24/outline'
 import CartItem from './CartItem'
 import { useEffect } from 'react'
+import { useRouter } from 'next/navigation' // ← Correct import for App Router
 
 export default function CartSidebar() {
     const {
@@ -15,6 +16,8 @@ export default function CartSidebar() {
         getTotalItems,
         clearCart
     } = useCartStore()
+
+    const router = useRouter() // ← Use the hook
 
     // Close cart on escape key
     useEffect(() => {
@@ -32,6 +35,11 @@ export default function CartSidebar() {
             document.body.style.overflow = 'unset'
         }
     }, [isOpen, closeCart])
+
+    const handleCheckout = () => {
+        closeCart()
+        router.push('/checkout')
+    }
 
     if (!isOpen) return null
 
@@ -99,10 +107,7 @@ export default function CartSidebar() {
                                     Clear Cart
                                 </button>
                                 <button
-                                    onClick={() => {
-                                        // TODO: Implement checkout
-                                        alert('Proceeding to checkout!')
-                                    }}
+                                    onClick={handleCheckout}
                                     className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                                 >
                                     Proceed to Checkout
