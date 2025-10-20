@@ -1,4 +1,26 @@
 // app/types/index.ts - Update with more specific types
+import { DefaultSession } from 'next-auth'
+
+declare module 'next-auth' {
+    interface Session {
+        user: {
+            id: string
+            role: string
+        } & DefaultSession['user']
+    }
+
+    interface User {
+        role: string
+    }
+}
+
+declare module 'next-auth/jwt' {
+    interface JWT {
+        role: string
+        id: string
+    }
+}
+
 export interface Product {
     id: string
     name: string
@@ -57,4 +79,34 @@ export interface CartProduct {
     price: number
     images: string[]
     inventory: number
+}
+
+export interface OrderItem {
+    id: string
+    quantity: number
+    price: number
+    product: {
+        name: string
+        images: string[]
+    }
+}
+
+export interface Order {
+    id: string
+    total: number
+    status: string
+    createdAt: Date
+    updatedAt: Date
+    orderItems: OrderItem[]
+}
+
+export interface UserWithOrders {
+    id: string
+    name: string | null
+    email: string
+    role: string
+    createdAt: Date
+    updatedAt: Date
+    addresses: any[] // We can define Address type later if needed
+    orders: Order[]
 }

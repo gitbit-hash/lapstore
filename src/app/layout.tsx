@@ -1,9 +1,8 @@
-// app/layout.tsx - Updated to include cart
+// app/layout.tsx - Updated with SessionProvider
 import './globals.css'
 import { Inter } from 'next/font/google'
 import CartSidebar from './components/CartSidebar'
-import StoreInitializer from './components/StoreInitializer'
-
+import { Providers } from './providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,9 +19,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <StoreInitializer />
-        {children}
-        <CartSidebar />
+        <Providers>
+          <div className="min-h-screen bg-gray-50">
+            {children}
+            <CartSidebar />
+          </div>
+        </Providers>
       </body>
     </html>
   )
