@@ -1,4 +1,4 @@
-// app/actions/categories.ts
+// src/app/actions/categories.ts
 'use server'
 
 import { prisma } from '@/app/lib/prisma'

@@ -1,4 +1,4 @@
-// app/components/CartSidebar.tsx - Updated with correct router import
+// src/app/components/CartSidebar.tsx - Updated with correct router import
 'use client'
 
 import { useCartStore } from '../stores/cartStore'

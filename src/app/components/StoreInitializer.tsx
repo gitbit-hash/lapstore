@@ -1,4 +1,4 @@
-// app/components/StoreInitializer.tsx
+// src/app/components/StoreInitializer.tsx
 'use client'
 
 import { useEffect, useRef } from 'react'

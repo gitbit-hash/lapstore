@@ -1,10 +1,29 @@
-// app/orders/page.tsx - Updated with proper types
+// src/app/orders/page.tsx
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '../lib/prisma'
 import Link from 'next/link'
-import { Order } from '../types'
+
+interface OrderItem {
+    id: string
+    quantity: number
+    price: number
+    product: {
+        name: string
+        images: string[]
+    }
+}
+
+interface Order {
+    id: string
+    total: number
+    status: string
+    paymentMethod?: string
+    createdAt: Date
+    updatedAt: Date
+    orderItems: OrderItem[]
+}
 
 export default async function OrdersPage() {
     const session = await getServerSession(authOptions)
@@ -93,7 +112,7 @@ export default async function OrdersPage() {
 
                             <div className="border-t border-gray-200 pt-4">
                                 <div className="space-y-4">
-                                    {order.orderItems.map((item) => (
+                                    {order.orderItems.map((item: OrderItem) => (
                                         <div key={item.id} className="flex items-center space-x-3">
                                             <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
                                                 <img

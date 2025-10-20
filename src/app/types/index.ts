@@ -1,4 +1,4 @@
-// app/types/index.ts - Update with more specific types
+// src/app/types/index.ts - Update with more specific types
 import { DefaultSession } from 'next-auth'
 
 declare module 'next-auth' {
@@ -47,13 +47,23 @@ export interface ProductDetail extends Product {
 
 export interface Review {
     id: string
+    productId: string
+    userId: string
     rating: number
     comment: string | null
     createdAt: Date
+    updatedAt: Date
     user: {
         name: string | null
         image: string | null
     }
+}
+
+interface ProductWithReviews extends Product {
+    reviews: Array<{
+        rating: number
+        // other review fields you're selecting
+    }>
 }
 
 export interface Category {

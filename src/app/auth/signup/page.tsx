@@ -1,4 +1,4 @@
-// app/auth/signup/page.tsx - Updated error handling
+// /src/app/auth/signup/page.tsx - Updated error handling
 'use client'
 
 import { useState } from 'react'

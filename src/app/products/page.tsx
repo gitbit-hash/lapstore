@@ -1,4 +1,4 @@
-// app/products/page.tsx - Updated with awaited searchParams
+// src/app/products/page.tsx - Updated with awaited searchParams
 import ProductGrid from '../components/ProductGrid'
 import ProductFilters from '../components/ProductFilters'
 import SearchBar from '../components/SearchBar'

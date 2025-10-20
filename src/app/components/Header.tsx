@@ -1,4 +1,4 @@
-// app/components/Header.tsx - Updated with auth
+// src/app/components/Header.tsx - Updated with auth
 'use client'
 
 import { ShoppingCartIcon, UserCircleIcon } from '@heroicons/react/24/outline'
@@ -43,9 +43,9 @@ export default function Header() {
 
                     {/* Cart & Actions */}
                     <div className="flex items-center space-x-4">
-                        {/* Cart Button */}
-                        <button
-                            onClick={toggleCart}
+                        {/* Cart Link */}
+                        <Link
+                            href="/cart"
                             className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors group"
                         >
                             <ShoppingCartIcon className="h-6 w-6" />
@@ -54,7 +54,7 @@ export default function Header() {
                                     {getTotalItems()}
                                 </span>
                             )}
-                        </button>
+                        </Link>
 
                         {/* User Menu */}
                         {status === 'loading' ? (

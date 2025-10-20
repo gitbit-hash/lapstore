@@ -1,4 +1,4 @@
-// app/components/AddToCartButton.tsx - Updated with cart store
+// /src/app/components/AddToCartButton.tsx - Updated with cart store
 'use client'
 
 import { useState } from 'react'

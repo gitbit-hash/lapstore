@@ -1,4 +1,4 @@
-// app/checkout/cancel/page.tsx - Simple version
+// asrc/pp/checkout/cancel/page.tsx - Simple version
 import Link from 'next/link'
 
 export default function CheckoutCancel() {

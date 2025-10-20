@@ -1,4 +1,4 @@
-// app/actions/products.ts
+// /src/app/actions/products.ts
 'use server'
 
 import { prisma } from '@/app/lib/prisma'

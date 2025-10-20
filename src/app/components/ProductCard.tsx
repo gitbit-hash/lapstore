@@ -1,4 +1,4 @@
-// app/components/ProductCard.tsx - Update the Add to Cart button
+// src/app/components/ProductCard.tsx - Update the Add to Cart button
 'use client'
 
 import { useState } from 'react'
@@ -110,8 +110,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                                                 setCurrentImageIndex(index)
                                             }}
                                             className={`w-2 h-2 rounded-full ${index === currentImageIndex
-                                                    ? 'bg-white'
-                                                    : 'bg-white bg-opacity-50'
+                                                ? 'bg-white'
+                                                : 'bg-white bg-opacity-50'
                                                 }`}
                                         />
                                     ))}

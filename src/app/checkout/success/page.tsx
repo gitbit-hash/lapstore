@@ -1,4 +1,4 @@
-// app/checkout/success/page.tsx
+// src/app/checkout/success/page.tsx
 'use client'
 
 import { useEffect } from 'react'

@@ -1,4 +1,4 @@
-// app/components/CartItem.tsx
+// src/app/components/CartItem.tsx
 'use client'
 
 import Image from 'next/image'

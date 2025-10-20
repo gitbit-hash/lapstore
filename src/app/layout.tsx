@@ -1,4 +1,4 @@
-// app/layout.tsx - Updated with SessionProvider
+// src/app/layout.tsx - Updated with SessionProvider
 import './globals.css'
 import { Inter } from 'next/font/google'
 import CartSidebar from './components/CartSidebar'

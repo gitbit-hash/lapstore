@@ -1,4 +1,4 @@
-// app/products/[id]/page.tsx - Updated with awaited params
+// src/app/products/[id]/page.tsx - Updated with awaited params
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -7,11 +7,22 @@ import { StarIcon as StarOutline } from '@heroicons/react/24/outline'
 import { prisma } from '@/app/lib/prisma'
 import ProductGrid from '@/app/components/ProductGrid'
 import AddToCartButton from '../../components/AddToCartButton'
-import { ProductDetail, CartProduct } from '../../types'
+import { ProductDetail, CartProduct, Product } from '../../types'
 
 interface ProductPageProps {
     params: Promise<{
         id: string
+    }>
+}
+
+type ProductWithRelations = Product & {
+    category: {
+        id: string
+        name: string
+        slug: string
+    }
+    reviews: Array<{
+        rating: number
     }>
 }
 
@@ -39,9 +50,9 @@ async function getProduct(id: string) {
 
         if (!product) return null
 
-        // Calculate average rating and transform to ProductDetail type
+        // Calculate average rating with proper typing
         const averageRating = product.reviews.length > 0
-            ? product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length
+            ? product.reviews.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) / product.reviews.length
             : 0
 
         const productDetail: ProductDetail = {
@@ -76,11 +87,11 @@ async function getRelatedProducts(categoryId: string, currentProductId: string) 
             take: 4
         })
 
-        // Calculate average ratings and transform to Product type
-        const productsWithRatings = products.map(product => ({
+        // Calculate average ratings with proper typing
+        const productsWithRatings = products.map((product: ProductWithRelations) => ({
             ...product,
             averageRating: product.reviews.length > 0
-                ? product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length
+                ? product.reviews.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) / product.reviews.length
                 : 0,
             reviewCount: product.reviews.length
         }))
@@ -309,7 +320,7 @@ export async function generateStaticParams() {
         select: { id: true }
     })
 
-    return products.map((product) => ({
+    return products.map((product: ProductWithRelations) => ({
         id: product.id
     }))
 }

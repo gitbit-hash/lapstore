@@ -1,4 +1,4 @@
-// app/checkout/page.tsx
+// src/app/checkout/page.tsx
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -47,11 +47,16 @@ export default function CheckoutPage() {
         }))
     }
 
+    // app/checkout/page.tsx - Updated handleSubmit with better error handling
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
 
         try {
+            console.log('🛒 Starting checkout process...')
+            console.log('📦 Cart items:', items)
+            console.log('🏠 Shipping info:', shippingInfo)
+
             const response = await fetch('/api/orders', {
                 method: 'POST',
                 headers: {
@@ -65,19 +70,30 @@ export default function CheckoutPage() {
                 }),
             })
 
-            const order = await response.json()
+            console.log('📡 Response status:', response.status)
+
+            const data = await response.json()
+            console.log('📦 Response data:', data)
 
             if (!response.ok) {
-                throw new Error(order.error || 'Failed to create order')
+                throw new Error(data.error || `Failed to create order: ${response.status}`)
             }
+
+            console.log('✅ Order created successfully:', data.id)
 
             // Clear cart and redirect to success page
             clearCart()
-            router.push(`/checkout/success?orderId=${order.id}`)
+            console.log('🛒 Cart cleared, redirecting to success page...')
+
+            // Use window.location for a hard redirect to ensure the page loads fresh
+            window.location.href = `/checkout/success?orderId=${data.id}`
 
         } catch (error) {
-            console.error('Checkout error:', error)
-            alert('Failed to place order. Please try again.')
+            console.error('❌ Checkout error:', error)
+            alert(`Checkout failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+
+            // Don't clear cart on error
+            // clearCart() should only be called on success
         } finally {
             setIsLoading(false)
         }

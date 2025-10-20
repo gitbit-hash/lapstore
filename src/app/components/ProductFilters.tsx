@@ -1,4 +1,4 @@
-// app/components/ProductFilters.tsx
+// src/app/components/ProductFilters.tsx
 'use client'
 
 import { useState, useEffect } from 'react'

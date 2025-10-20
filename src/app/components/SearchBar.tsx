@@ -1,4 +1,4 @@
-// app/components/SearchBar.tsx
+// src/app/components/SearchBar.tsx
 'use client'
 
 import { useState, useEffect } from 'react'

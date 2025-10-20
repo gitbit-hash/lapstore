@@ -1,4 +1,4 @@
-// app/page.tsx
+// src/app/page.tsx
 import Header from './components/Header'
 import ProductGrid from './components/ProductGrid'
 import { getProducts } from './actions/products'
