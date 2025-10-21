@@ -1,8 +1,9 @@
-// src/app/layout.tsx - Updated with SessionProvider
+// src/app/layout.tsx
 import './globals.css'
 import { Inter } from 'next/font/google'
 import CartSidebar from './components/CartSidebar'
 import { Providers } from './providers'
+import NextTopLoader from 'nextjs-toploader'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,6 +21,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
+          <NextTopLoader
+            color="#2563eb"
+            height={3}
+            showSpinner={false}
+          />
           <div className="min-h-screen bg-gray-50">
             {children}
             <CartSidebar />

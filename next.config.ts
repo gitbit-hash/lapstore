@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     domains: ['images.unsplash.com', 'via.placeholder.com'],
     formats: ['image/avif', 'image/webp'],
   },
+  devIndicators: false
 };
 
 export default nextConfig;
