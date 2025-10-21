@@ -150,6 +150,7 @@ model Address {
 enum Role {
   CUSTOMER
   ADMIN
+  SUPER_ADMIN
 }
 
 enum OrderStatus {

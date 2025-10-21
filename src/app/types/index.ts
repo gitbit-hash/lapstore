@@ -10,15 +10,21 @@ declare module 'next-auth' {
     }
 
     interface User {
-        role: string
+        role: UserRole
     }
 }
 
 declare module 'next-auth/jwt' {
     interface JWT {
-        role: string
+        role: UserRole
         id: string
     }
+}
+
+export enum UserRole {
+    CUSTOMER = 'CUSTOMER',
+    ADMIN = 'ADMIN',
+    SUPER_ADMIN = 'SUPER_ADMIN'
 }
 
 export interface Product {
