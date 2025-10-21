@@ -27,22 +27,24 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
     },
     isActive: initialData?.isActive ?? true
   })
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false)
 
   useEffect(() => {
-    // Fetch categories
     const fetchCategories = async () => {
+      setIsLoadingCategories(true)
       try {
         const response = await fetch('/api/categories')
         const data = await response.json()
         setCategories(data)
       } catch (error) {
         console.error('Error fetching categories:', error)
+      } finally {
+        setIsLoadingCategories(false)
       }
     }
 
     fetchCategories()
   }, [])
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 

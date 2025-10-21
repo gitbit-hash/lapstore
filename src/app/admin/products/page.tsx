@@ -1,10 +1,10 @@
-// src/app/admin/products/page.tsx
 import { getServerSession } from 'next-auth'
 import { authOptions } from './../../lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from './../../lib/prisma'
 import { UserRole } from './../../types'
 import Link from 'next/link'
+import ProductRow from './../../components/ProductRow'
 
 export default async function AdminProductsPage() {
   const session = await getServerSession(authOptions)
@@ -23,7 +23,8 @@ export default async function AdminProductsPage() {
       },
       _count: {
         select: {
-          orderItems: true
+          orderItems: true,
+          reviews: true
         }
       }
     },
@@ -101,72 +102,5 @@ export default async function AdminProductsPage() {
         )}
       </div>
     </div>
-  )
-}
-
-function ProductRow({ product }: { product: any }) {
-  const averageRating = product.reviews.length > 0
-    ? product.reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / product.reviews.length
-    : 0
-
-  return (
-    <tr className="hover:bg-gray-50 transition-colors">
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="flex items-center">
-          <div className="flex-shrink-0 h-10 w-10">
-            <img
-              className="h-10 w-10 rounded-lg object-cover"
-              src={product.images[0] || '/images/placeholder.jpg'}
-              alt={product.name}
-            />
-          </div>
-          <div className="ml-4">
-            <div className="text-sm font-medium text-gray-900">{product.name}</div>
-            <div className="text-sm text-gray-500">
-              {product._count.orderItems} orders
-            </div>
-          </div>
-        </div>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <span className="text-sm text-gray-900">{product.category.name}</span>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">${product.price}</div>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm text-gray-900">{product.inventory}</div>
-        {product.inventory <= 10 && product.inventory > 0 && (
-          <div className="text-xs text-yellow-600">Low stock</div>
-        )}
-        {product.inventory === 0 && (
-          <div className="text-xs text-red-600">Out of stock</div>
-        )}
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.isActive
-          ? 'bg-green-100 text-green-800'
-          : 'bg-gray-100 text-gray-800'
-          }`}>
-          {product.isActive ? 'Active' : 'Inactive'}
-        </span>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-        <div className="flex space-x-2">
-          <Link
-            href={`/admin/products/edit/${product.id}`}
-            className="text-blue-600 hover:text-blue-900"
-          >
-            Edit
-          </Link>
-          <button
-            className="text-red-600 hover:text-red-900"
-          // We'll add delete functionality later
-          >
-            Delete
-          </button>
-        </div>
-      </td>
-    </tr>
   )
 }
