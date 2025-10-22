@@ -1,4 +1,4 @@
-// src/app/types/index.ts - Update with more specific types
+// src/app/types/index.ts
 import { DefaultSession } from 'next-auth'
 
 declare module 'next-auth' {
@@ -147,4 +147,81 @@ export interface UserStatsType {
     customers: number
     admins: number
     verified: number
+}
+
+// Add to src/app/types/index.ts
+export interface UserDetail {
+    id: string
+    name: string | null
+    email: string
+    role: UserRole
+    emailVerified: Date | null
+    image: string | null
+    createdAt: Date
+    updatedAt: Date
+    addresses: Address[]
+    orders: Order[]
+    reviews: Review[]
+    wishlist: WishlistItem[]
+    statistics: {
+        totalSpent: number
+        totalOrders: number
+        averageOrderValue: number
+        totalReviews: number
+        totalWishlistItems: number
+    }
+}
+
+export interface WishlistItem {
+    id: string
+    userId: string
+    productId: string
+    createdAt: Date
+    product: {
+        id: string
+        name: string
+        images: string[]
+        price: number
+        inventory: number
+    }
+}
+
+export interface UserReview {
+    id: string
+    rating: number
+    comment: string | null
+    createdAt: Date
+    updatedAt: Date
+    product: {
+        id: string
+        name: string
+        images: string[]
+    }
+}
+
+export interface UserAddress {
+    id: string
+    street: string
+    city: string
+    state: string
+    postalCode: string
+    country: string
+    isDefault: boolean
+    name?: string
+    createdAt: Date
+    updatedAt: Date
+}
+
+export interface Address {
+    id: string
+    userId: string
+    street: string
+    city: string
+    state: string
+    postalCode: string
+    country: string
+    isDefault: boolean
+    name?: string | null
+    createdAt: Date
+    updatedAt: Date
 }
