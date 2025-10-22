@@ -1,75 +1,78 @@
+// src/app/api/admin/users/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../lib/auth'
-import { prisma } from '../../../lib/prisma'
-import { UserRole } from '../../../types'
+import { authOptions } from '@/app/lib/auth'
+import { prisma } from '@/app/lib/prisma'
+import { UserRole } from '@/app/types'
 
-// Only SUPER_ADMIN can manage users
+// GET all users with pagination and filtering
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (session?.user.role !== UserRole.SUPER_ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    // Only SUPER_ADMIN can manage users
+    if (!session || session.user.role !== UserRole.SUPER_ADMIN) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-        _count: {
-          select: {
-            orders: true
+    const { searchParams } = new URL(request.url)
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const search = searchParams.get('search') || ''
+    const role = searchParams.get('role') || ''
+    const skip = (page - 1) * limit
+
+    // Build where clause
+    const where: any = {}
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } }
+      ]
+    }
+
+    if (role && Object.values(UserRole).includes(role as UserRole)) {
+      where.role = role
+    }
+
+    const [users, totalCount] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          emailVerified: true,
+          createdAt: true,
+          updatedAt: true,
+          _count: {
+            select: {
+              orders: true,
+              reviews: true
+            }
           }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.user.count({ where })
+    ])
+
+    return NextResponse.json({
+      users,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(totalCount / limit),
+        totalUsers: totalCount,
+        hasNext: page < Math.ceil(totalCount / limit),
+        hasPrev: page > 1
       }
     })
-
-    return NextResponse.json(users)
   } catch (error) {
     console.error('Error fetching users:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions)
-
-    if (session?.user.role !== UserRole.SUPER_ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
-    }
-
-    const { userId, role } = await request.json()
-
-    // Prevent demoting the last SUPER_ADMIN
-    if (role !== UserRole.SUPER_ADMIN) {
-      const superAdminCount = await prisma.user.count({
-        where: { role: UserRole.SUPER_ADMIN }
-      })
-
-      if (superAdminCount <= 1) {
-        return NextResponse.json(
-          { error: 'Cannot demote the last super admin' },
-          { status: 400 }
-        )
-      }
-    }
-
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: { role }
-    })
-
-    return NextResponse.json({ message: 'User role updated', user })
-  } catch (error) {
-    console.error('Error updating user role:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

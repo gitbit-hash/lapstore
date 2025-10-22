@@ -127,3 +127,24 @@ export interface UserWithOrders {
     addresses: any[] // We can define Address type later if needed
     orders: Order[]
 }
+
+export interface AdminUser {
+    id: string
+    name: string | null
+    email: string
+    role: UserRole
+    emailVerified: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: {
+        orders: number
+        reviews: number
+    }
+}
+
+export interface UserStatsType {
+    total: number
+    customers: number
+    admins: number
+    verified: number
+}
