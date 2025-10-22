@@ -1,0 +1,161 @@
+import { getServerSession } from 'next-auth'
+import { authOptions } from './../../lib/auth'
+import { redirect } from 'next/navigation'
+import { prisma } from './../../lib/prisma'
+import { UserRole } from './../../types'
+import Link from 'next/link'
+import OrderRow from './../../components/OrderRow'
+
+export default async function AdminOrdersPage() {
+  const session = await getServerSession(authOptions)
+
+  if (!session || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.SUPER_ADMIN)) {
+    redirect('/')
+  }
+
+  const orders = await prisma.order.findMany({
+    include: {
+      customer: {
+        select: {
+          id: true,
+          name: true,
+          email: true
+        }
+      },
+      orderItems: {
+        include: {
+          product: {
+            select: {
+              name: true,
+              images: true
+            }
+          }
+        }
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    take: 50 // Limit to recent orders for performance
+  })
+
+  // Calculate order statistics
+  const orderStats = {
+    total: orders.length,
+    pending: orders.filter(order => order.status === 'PENDING').length,
+    processing: orders.filter(order => order.status === 'PROCESSING').length,
+    shipped: orders.filter(order => order.status === 'SHIPPED').length,
+    delivered: orders.filter(order => order.status === 'DELIVERED').length,
+    cancelled: orders.filter(order => order.status === 'CANCELLED').length,
+  }
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Order Management</h1>
+          <p className="text-gray-600 mt-2">Manage and track customer orders</p>
+        </div>
+        <div className="flex space-x-4">
+          <Link
+            href="/admin/orders?filter=pending"
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          >
+            View Pending Orders
+          </Link>
+        </div>
+      </div>
+
+      {/* Order Statistics */}
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+        <StatCard title="Total" value={orderStats.total} color="gray" />
+        <StatCard title="Pending" value={orderStats.pending} color="yellow" />
+        <StatCard title="Processing" value={orderStats.processing} color="blue" />
+        <StatCard title="Shipped" value={orderStats.shipped} color="purple" />
+        <StatCard title="Delivered" value={orderStats.delivered} color="green" />
+        <StatCard title="Cancelled" value={orderStats.cancelled} color="red" />
+      </div>
+
+      {/* Orders Table */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Recent Orders ({orders.length})
+            </h2>
+            <div className="text-sm text-gray-600">
+              Showing last 50 orders
+            </div>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Order & Customer
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Items
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Total
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Payment
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {orders.map((order) => (
+                <OrderRow key={order.id} order={order} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {orders.length === 0 && (
+          <div className="p-12 text-center">
+            <div className="text-gray-400 mb-4">
+              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
+            <p className="text-gray-500">Customer orders will appear here when they start shopping.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function StatCard({ title, value, color }: { title: string; value: number; color: string }) {
+  const colorClasses = {
+    gray: 'bg-gray-100 text-gray-800',
+    yellow: 'bg-yellow-100 text-yellow-800',
+    blue: 'bg-blue-100 text-blue-800',
+    purple: 'bg-purple-100 text-purple-800',
+    green: 'bg-green-100 text-green-800',
+    red: 'bg-red-100 text-red-800'
+  }
+
+  return (
+    <div className="bg-white p-4 rounded-lg border border-gray-200 text-center">
+      <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClasses[color as keyof typeof colorClasses]} mb-2`}>
+        {title}
+      </div>
+      <div className="text-2xl font-bold text-gray-900">{value}</div>
+    </div>
+  )
+}
