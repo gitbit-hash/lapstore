@@ -1,15 +1,29 @@
-// src/app/components/UserReviews.tsx
+// src/app/components/UserReviews.tsx - Updated to handle missing product id
 import Link from 'next/link'
 import { StarIcon } from '@heroicons/react/24/solid'
 import { StarIcon as StarOutline } from '@heroicons/react/24/outline'
-import { UserDetail } from '../types'
 
 interface UserReviewsProps {
-  userDetailProp: UserDetail,
+  user: {
+    reviews: Array<{
+      id: string
+      rating: number
+      comment: string | null
+      createdAt: Date
+      updatedAt: Date
+      product: {
+        name: string
+        images: string[]
+        id?: string // Make id optional
+      }
+    }>
+  }
 }
 
-export default function UserReviews({ userDetailProp }: UserReviewsProps) {
-  if (userDetailProp.reviews.length === 0) {
+export default function UserReviews({ user }: UserReviewsProps) {
+  const reviews = user.reviews || []
+
+  if (reviews.length === 0) {
     return (
       <div className="text-center py-8">
         <div className="text-gray-400 mb-4">
@@ -24,7 +38,7 @@ export default function UserReviews({ userDetailProp }: UserReviewsProps) {
   }
 
   // Calculate average rating
-  const averageRating = userDetailProp.reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / userDetailProp.reviews.length
+  const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
 
   return (
     <div className="space-y-6">
@@ -33,7 +47,7 @@ export default function UserReviews({ userDetailProp }: UserReviewsProps) {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">Review Summary</h3>
-            <p className="text-gray-600">{userDetailProp.reviews.length} total reviews</p>
+            <p className="text-gray-600">{reviews.length} total reviews</p>
           </div>
           <div className="text-right">
             <div className="flex items-center justify-end">
@@ -56,7 +70,7 @@ export default function UserReviews({ userDetailProp }: UserReviewsProps) {
       {/* Reviews List */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-900">Recent Reviews</h3>
-        {userDetailProp.reviews.map((review: any) => (
+        {reviews.map((review) => (
           <div key={review.id} className="border border-gray-200 rounded-lg p-4">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center space-x-3">
@@ -68,12 +82,18 @@ export default function UserReviews({ userDetailProp }: UserReviewsProps) {
                   />
                 </div>
                 <div>
-                  <Link
-                    href={`/products/${review.product.id}`}
-                    className="font-medium text-gray-900 hover:text-blue-600"
-                  >
-                    {review.product.name}
-                  </Link>
+                  {review.product.id ? (
+                    <Link
+                      href={`/products/${review.product.id}`}
+                      className="font-medium text-gray-900 hover:text-blue-600"
+                    >
+                      {review.product.name}
+                    </Link>
+                  ) : (
+                    <span className="font-medium text-gray-900">
+                      {review.product.name}
+                    </span>
+                  )}
                   <div className="flex items-center mt-1">
                     <div className="flex">
                       {[1, 2, 3, 4, 5].map((star) => (
@@ -100,9 +120,11 @@ export default function UserReviews({ userDetailProp }: UserReviewsProps) {
             )}
 
             <div className="flex justify-end mt-3 space-x-2">
-              <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                View Product
-              </button>
+              {review.product.id && (
+                <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                  View Product
+                </button>
+              )}
               <button className="text-red-600 hover:text-red-700 text-sm font-medium">
                 Delete Review
               </button>
@@ -110,15 +132,6 @@ export default function UserReviews({ userDetailProp }: UserReviewsProps) {
           </div>
         ))}
       </div>
-
-      {/* View All Link */}
-      {userDetailProp.reviews.length > 5 && (
-        <div className="text-center">
-          <button className="text-blue-600 hover:text-blue-700 font-medium">
-            View All Reviews ({userDetailProp.reviews.length})
-          </button>
-        </div>
-      )}
     </div>
   )
 }

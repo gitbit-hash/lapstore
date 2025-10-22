@@ -1,13 +1,14 @@
 // src/app/components/UserOrders.tsx
 import Link from 'next/link'
-import { UserDetail } from '../types'
+import { UserDetail, Order, OrderItem } from '../types'
 
 interface UserOrdersProps {
-  userDetailProp: UserDetail,
+  user: UserDetail,
+  orderItem: OrderItem
 }
 
-export default function UserOrders({ userDetailProp }: UserOrdersProps) {
-  if (userDetailProp.orders.length === 0) {
+export default function UserOrders({ user }: UserOrdersProps) {
+  if (user.orders.length === 0) {
     return (
       <div className="text-center py-8">
         <div className="text-gray-400 mb-4">
@@ -26,7 +27,7 @@ export default function UserOrders({ userDetailProp }: UserOrdersProps) {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-gray-900">Recent Orders</h3>
         <Link
-          href={`/admin/orders?user=${userDetailProp.id}`}
+          href={`/admin/orders?user=${user.id}`}
           className="text-blue-600 hover:text-blue-700 text-sm font-medium"
         >
           View All Orders
@@ -34,7 +35,7 @@ export default function UserOrders({ userDetailProp }: UserOrdersProps) {
       </div>
 
       <div className="space-y-4">
-        {userDetailProp.orders.map((order) => (
+        {user.orders.map((order: Order) => (
           <div key={order.id} className="border border-gray-200 rounded-lg p-4">
             <div className="flex justify-between items-start mb-3">
               <div>
@@ -62,7 +63,7 @@ export default function UserOrders({ userDetailProp }: UserOrdersProps) {
 
             {/* Order Items */}
             <div className="space-y-2">
-              {order.orderItems.slice(0, 3).map((item) => (
+              {order.orderItems.slice(0, 3).map((item: any) => (
                 <div key={item.id} className="flex items-center space-x-3 text-sm">
                   <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
                     <img

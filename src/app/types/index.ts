@@ -221,7 +221,6 @@ export interface Address {
     postalCode: string
     country: string
     isDefault: boolean
-    name?: string | null
     createdAt: Date
     updatedAt: Date
 }

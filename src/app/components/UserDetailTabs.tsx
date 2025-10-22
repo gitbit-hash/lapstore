@@ -1,4 +1,4 @@
-// src/app/components/UserDetailTabs.tsx
+// src/app/components/UserDetailTabs.tsx - Updated with correct review type
 'use client'
 
 import { useState } from 'react'
@@ -43,9 +43,10 @@ interface UserDetailTabsProps {
       createdAt: Date
       updatedAt: Date
       product: {
-        id: string
         name: string
         images: string[]
+        // Make id optional since Prisma might not include it
+        id?: string
       }
     }>
     _count: {
@@ -67,43 +68,38 @@ export default function UserDetailTabs({ user, userStats }: UserDetailTabsProps)
   const [activeTab, setActiveTab] = useState('profile')
 
   const tabs = [
-    {
-      id: 'profile',
-      name: 'Profile',
-      component: UserProfile
-    },
-    {
-      id: 'orders',
-      name: `Orders`,
-      component: UserOrders
-    },
-    {
-      id: 'reviews',
-      name: `Reviews`,
-      component: UserReviews
-    },
-    {
-      id: 'addresses',
-      name: `Addresses`,
-      component: UserAddresses
-    },
+    { id: 'profile', name: 'Profile', component: UserProfile },
+    { id: 'orders', name: 'Orders', component: UserOrders },
+    { id: 'reviews', name: 'Reviews', component: UserReviews },
+    { id: 'addresses', name: 'Addresses', component: UserAddresses },
   ]
 
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component
 
-  // Pass only the required props to each component
-  const getComponentProps = (tabId: string) => {
-    switch (tabId) {
+  // Render the appropriate component with the right props
+  const renderActiveComponent = () => {
+    if (!ActiveComponent) return null
+
+    switch (activeTab) {
       case 'profile':
-        return { user }
+        return <ActiveComponent user={user} />
       case 'orders':
-        return { user: { id: user.id, name: user.name, email: user.email, orders: user.orders } }
+        return <ActiveComponent user={{
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          orders: user.orders
+        }} />
       case 'reviews':
-        return { user: { reviews: user.reviews } }
+        return <ActiveComponent user={{
+          reviews: user.reviews
+        }} />
       case 'addresses':
-        return { user: { addresses: user.addresses } }
+        return <ActiveComponent user={{
+          addresses: user.addresses
+        }} />
       default:
-        return { user }
+        return null
     }
   }
 
@@ -117,19 +113,18 @@ export default function UserDetailTabs({ user, userStats }: UserDetailTabsProps)
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`py-4 px-6 text-sm font-medium border-b-2 transition-colors flex items-center space-x-2 ${activeTab === tab.id
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
             >
               <span>{tab.name}</span>
               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${activeTab === tab.id
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-gray-100 text-gray-600'
+                  ? 'bg-blue-100 text-blue-800'
+                  : 'bg-gray-100 text-gray-600'
                 }`}>
                 {tab.id === 'orders' && userStats.totalOrders}
                 {tab.id === 'reviews' && userStats.totalReviews}
                 {tab.id === 'addresses' && user.addresses.length}
-                {tab.id === 'profile' && ''}
               </span>
             </button>
           ))}
@@ -138,10 +133,7 @@ export default function UserDetailTabs({ user, userStats }: UserDetailTabsProps)
 
       {/* Tab Content */}
       <div className="p-6">
-        {ActiveComponent && (
-          // @ts-ignore - We know the props are correct
-          <ActiveComponent user={getComponentProps(activeTab)} />
-        )}
+        {renderActiveComponent()}
       </div>
     </div>
   )

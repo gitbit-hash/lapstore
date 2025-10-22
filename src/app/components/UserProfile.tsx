@@ -1,4 +1,4 @@
-// src/app/components/UserProfile.tsx - Complete with proper typing
+// src/app/components/UserProfile.tsx - Extra safe version
 import { Address } from '../types'
 
 interface UserProfileProps {
@@ -11,8 +11,8 @@ interface UserProfileProps {
     image: string | null
     createdAt: Date
     updatedAt: Date
-    addresses: Address[]
-    orders: Array<{
+    addresses?: Address[]
+    orders?: Array<{
       id: string
       createdAt: Date
       total: number
@@ -24,7 +24,7 @@ interface UserProfileProps {
         }
       }>
     }>
-    reviews: Array<{
+    reviews?: Array<{
       id: string
       createdAt: Date
       rating: number
@@ -34,7 +34,7 @@ interface UserProfileProps {
         images: string[]
       }
     }>
-    _count: {
+    _count?: {
       orders: number
       reviews: number
       wishlist: number
@@ -43,9 +43,15 @@ interface UserProfileProps {
 }
 
 export default function UserProfile({ user }: UserProfileProps) {
-  // Get the most recent order and review
-  const lastOrder = user.orders[0]
-  const lastReview = user.reviews[0]
+  // Safely get arrays with fallbacks
+  const orders = user.orders || []
+  const reviews = user.reviews || []
+  const addresses = user.addresses || []
+  const counts = user._count || { orders: 0, reviews: 0, wishlist: 0 }
+
+  // Safely get the most recent order and review
+  const lastOrder = orders.length > 0 ? orders[0] : null
+  const lastReview = reviews.length > 0 ? reviews[0] : null
 
   return (
     <div className="space-y-6">
@@ -61,10 +67,6 @@ export default function UserProfile({ user }: UserProfileProps) {
             <div className="flex justify-between">
               <span className="text-sm font-medium text-gray-500">Email</span>
               <span className="text-sm text-gray-900">{user.email}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm font-medium text-gray-500">Role</span>
-              <span className="text-sm text-gray-900 capitalize">{user.role.toLowerCase().replace('_', ' ')}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm font-medium text-gray-500">Member Since</span>
@@ -94,19 +96,19 @@ export default function UserProfile({ user }: UserProfileProps) {
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-sm font-medium text-gray-500">Total Orders</span>
-              <span className="text-sm text-gray-900">{user._count.orders}</span>
+              <span className="text-sm text-gray-900">{counts.orders}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm font-medium text-gray-500">Reviews Written</span>
-              <span className="text-sm text-gray-900">{user._count.reviews}</span>
+              <span className="text-sm text-gray-900">{counts.reviews}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm font-medium text-gray-500">Wishlist Items</span>
-              <span className="text-sm text-gray-900">{user._count.wishlist}</span>
+              <span className="text-sm text-gray-900">{counts.wishlist}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm font-medium text-gray-500">Saved Addresses</span>
-              <span className="text-sm text-gray-900">{user.addresses.length}</span>
+              <span className="text-sm text-gray-900">{addresses.length}</span>
             </div>
           </div>
         </div>
