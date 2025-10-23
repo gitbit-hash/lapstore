@@ -92,7 +92,7 @@ export default async function AdminDashboard() {
           <>
             <StatCard
               title="Total Revenue"
-              value={`$${superAdminData.totalRevenue.toFixed(2)}`}
+              value={`${superAdminData.totalRevenue.toFixed(0)} EGP`}
               description="Last 30 days"
               isCurrency
             />
@@ -165,7 +165,7 @@ export default async function AdminDashboard() {
                 <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                   <span className="text-gray-700">Monthly Revenue</span>
                   <span className="font-semibold text-blue-600">
-                    ${superAdminData?.totalRevenue.toFixed(2) || '0.00'}
+                    ${superAdminData?.totalRevenue.toFixed(0) || '0.00'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">

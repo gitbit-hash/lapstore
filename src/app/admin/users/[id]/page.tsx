@@ -147,7 +147,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <StatCard
             title="Total Spent"
-            value={`$${userStats.totalSpent.toFixed(2)}`}
+            value={`${userStats.totalSpent.toFixed(0)} EGP`}
             description="Lifetime value"
           />
           <StatCard
@@ -157,7 +157,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
           />
           <StatCard
             title="Avg Order"
-            value={`$${userStats.averageOrderValue.toFixed(2)}`}
+            value={`${userStats.averageOrderValue.toFixed(0)} EGP`}
             description="Average order value"
           />
           <StatCard

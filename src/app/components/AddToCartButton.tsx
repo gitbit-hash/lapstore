@@ -103,7 +103,7 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
                 ) : availableQuantity === 0 ? (
                     'Out of Stock'
                 ) : (
-                    `Add to Cart - $${(product.price * quantity).toFixed(2)}`
+                    `Add to Cart - ${(product.price * quantity).toFixed(0)} EGP`
                 )}
             </button>
 

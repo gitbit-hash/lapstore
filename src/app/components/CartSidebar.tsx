@@ -95,7 +95,7 @@ export default function CartSidebar() {
                             {/* Total */}
                             <div className="flex justify-between text-lg font-semibold">
                                 <span>Total:</span>
-                                <span>${getTotalPrice().toFixed(2)}</span>
+                                <span>{getTotalPrice().toFixed(0)} EGP</span>
                             </div>
 
                             {/* Actions */}

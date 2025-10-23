@@ -104,7 +104,7 @@ export default function OrderRow({ order }: OrderRowProps) {
       </td>
       <td className="px-6 py-4">
         <div className="text-sm font-medium text-gray-900">
-          ${order.total.toFixed(2)}
+          {order.total.toFixed(0)} EGP
         </div>
       </td>
       <td className="px-6 py-4">

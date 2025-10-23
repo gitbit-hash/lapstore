@@ -47,7 +47,7 @@ export default function CartItem({ item }: CartItemProps) {
                     ${item.price} × {item.quantity}
                 </p>
                 <p className="text-lg font-semibold text-gray-900 mt-1">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    {(item.price * item.quantity).toFixed(0)} EGP
                 </p>
             </div>
 

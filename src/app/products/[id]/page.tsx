@@ -212,7 +212,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                             {/* Price */}
                             <div className="mb-6">
                                 <span className="text-4xl font-bold text-gray-900">
-                                    ${product.price}
+                                    {product.price} EGP
                                 </span>
                                 <div className={`text-sm ${product.inventory > 0 ? 'text-green-600' : 'text-red-600'}`}>
                                     {product.inventory > 0 ? `${product.inventory} in stock` : 'Out of stock'}

@@ -155,7 +155,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <div className="flex items-center justify-between">
                         <div>
                             <span className="text-2xl font-bold text-gray-900">
-                                ${product.price}
+                                {(product.price).toFixed(0)} EGP
                             </span>
                             <div className={`text-xs ${product.inventory > 0 ? 'text-green-600' : 'text-red-600'}`}>
                                 {product.inventory > 0 ? `${product.inventory} in stock` : 'Out of stock'}

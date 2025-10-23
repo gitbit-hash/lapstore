@@ -1,0 +1,172 @@
+- .env
+- .gitignore
+- docs
+  - database-setup.md
+- eslint.config.mjs
+- next-env.d.ts
+- next.config.ts
+- package-lock.json
+- package.json
+- postcss.config.mjs
+- prisma
+  - migrations
+    - 20251018235016_init
+      - migration.sql
+    - 20251020143615_add_auth_models
+      - migration.sql
+    - 20251020161512_add_payment_method
+      - migration.sql
+    - 20251021175400_add_super_admin_role
+      - migration.sql
+    - 20251022215350_add_phone_to_user
+      - migration.sql
+    - 20251022220025_make_phone_required
+      - migration.sql
+    - 20251022221905_add_phone_field
+      - migration.sql
+    - 20251022222301_make_phone_required
+      - migration.sql
+    - 20251023103242_add_phone_field
+      - migration.sql
+    - 20251023103745_add_guestinfos
+      - migration.sql
+    - migration_lock.toml
+  - schema.prisma
+  - seed.ts
+- public
+  - file.svg
+  - globe.svg
+  - images
+    - products
+      - business_laptops.jpg
+      - business_laptops_2.jpg
+      - gaming_laptops.jpg
+      - gaming_laptops_2.jpg
+      - monitors.jpg
+      - monitors_2.jpg
+  - next.svg
+  - vercel.svg
+  - window.svg
+- README.md
+- source_files.tar.gz
+- src
+  - app
+    - actions
+      - categories.ts
+      - products.ts
+    - admin
+      - layout.tsx
+      - orders
+        - page.tsx
+        - [id]
+          - page.tsx
+      - page.tsx
+      - products
+        - edit
+          - [id]
+            - page.tsx
+        - new
+          - page.tsx
+        - page.tsx
+      - users
+        - page.tsx
+        - [id]
+          - page.tsx
+    - api
+      - admin
+        - addresses
+          - [id]
+            - route.ts
+        - orders
+          - [id]
+            - route.ts
+        - products
+          - route.ts
+          - [id]
+            - route.ts
+        - reviews
+          - [id]
+            - route.ts
+        - setup-roles
+          - route.ts
+        - users
+          - route.ts
+          - [id]
+            - detail
+              - route.ts
+            - route.ts
+      - auth
+        - register
+          - route.ts
+        - [...nextauth]
+          - route.ts
+      - categories
+        - route.ts
+      - orders
+        - guest
+          - route.ts
+        - route.ts
+      - products
+        - route.ts
+    - auth
+      - register
+        - route.ts
+      - signin
+        - page.tsx
+      - signup
+        - page.tsx
+    - cart
+      - page.tsx
+    - checkout
+      - cancel
+        - page.tsx
+      - page.tsx
+      - success
+        - page.tsx
+    - components
+      - AddressForm.tsx
+      - AddToCartButton.tsx
+      - CartItem.tsx
+      - CartSidebar.tsx
+      - Header.tsx
+      - OrderRow.tsx
+      - ProductCard.tsx
+      - ProductFilters.tsx
+      - ProductForm.tsx
+      - ProductGrid.tsx
+      - ProductRow.tsx
+      - SearchBar.tsx
+      - StoreInitializer.tsx
+      - UserAddresses.tsx
+      - UserDetailTabs.tsx
+      - UserOrders.tsx
+      - UserProfile.tsx
+      - UserReviews.tsx
+      - UserRow.tsx
+      - UserStats.tsx
+    - favicon.ico
+    - globals.css
+    - layout.tsx
+    - lib
+      - auth.ts
+      - prisma.ts
+    - loading.tsx
+    - orders
+      - page.tsx
+    - page.tsx
+    - products
+      - page.tsx
+      - [id]
+        - page.tsx
+    - profile
+      - page.tsx
+    - providers.tsx
+    - stores
+      - cartStore.ts
+    - types
+      - index.ts
+    - utils
+      - calculations.ts
+  - middleware.ts
+- test.ts
+- tsconfig.json

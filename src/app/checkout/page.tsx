@@ -421,7 +421,7 @@ export default function CheckoutPage() {
                                     disabled={isLoading}
                                     className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-lg"
                                 >
-                                    {isLoading ? 'Placing Order...' : `Place Order - $${total.toFixed(2)}`}
+                                    {isLoading ? 'Placing Order...' : `Place Order - ${total.toFixed(0)} EGP`}
                                 </button>
 
                                 <p className="text-xs text-gray-500 mt-3 text-center">
@@ -458,7 +458,7 @@ export default function CheckoutPage() {
                                         </div>
                                         <div className="text-right">
                                             <p className="text-sm font-medium text-gray-900">
-                                                ${(item.price * item.quantity).toFixed(2)}
+                                                ${(item.price * item.quantity).toFixed(0)} EGP
                                             </p>
                                         </div>
                                     </div>
@@ -469,24 +469,24 @@ export default function CheckoutPage() {
                             <div className="space-y-2 border-t border-gray-200 pt-4">
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Subtotal</span>
-                                    <span className="text-gray-900">${subtotal.toFixed(2)}</span>
+                                    <span className="text-gray-900">${subtotal.toFixed(0)} EGP</span>
                                 </div>
 
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Shipping</span>
                                     <span className="text-gray-900">
-                                        {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
+                                        {shipping === 0 ? 'FREE' : `${shipping.toFixed(0)} EGP`}
                                     </span>
                                 </div>
 
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Tax</span>
-                                    <span className="text-gray-900">${tax.toFixed(2)}</span>
+                                    <span className="text-gray-900">${tax.toFixed(0)} EGP</span>
                                 </div>
 
                                 <div className="flex justify-between text-lg font-semibold border-t border-gray-200 pt-2">
-                                    <span>Total</span>
-                                    <span>${total.toFixed(2)}</span>
+                                    <span className="text-gray-600">Total</span>
+                                    <span className="text-gray-900">${total.toFixed(0)} EGP</span>
                                 </div>
 
                                 {shipping === 0 && (

@@ -85,7 +85,7 @@ export default async function OrdersPage() {
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">Total</p>
-                                    <p className="font-medium text-gray-900">${order.total.toFixed(2)}</p>
+                                    <p className="font-medium text-gray-900">{order.total.toFixed(2)} EGP</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">Order #</p>
@@ -131,7 +131,7 @@ export default async function OrdersPage() {
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-sm font-medium text-gray-900">
-                                                    ${(item.price * item.quantity).toFixed(2)}
+                                                    {(item.price * item.quantity).toFixed(0)} EGP
                                                 </p>
                                             </div>
                                         </div>
