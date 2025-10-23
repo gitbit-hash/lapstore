@@ -17,7 +17,7 @@ model User {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   password      String?
-  phone         String
+  phone         String?
   accounts      Account[]
   addresses     Address[]
   orders        Order[]
@@ -96,6 +96,7 @@ model Order {
   paymentMethod   String      @default("COD")
   customer        User        @relation(fields: [customerId], references: [id])
   orderItems      OrderItem[]
+  guestInfo       Json?
 }
 
 model OrderItem {

@@ -1,4 +1,4 @@
-// src/app/checkout/success/page.tsx
+// src/app/checkout/success/page.tsx - Updated for guest orders
 'use client'
 
 import { useEffect } from 'react'
@@ -10,6 +10,7 @@ import { CheckCircleIcon, TruckIcon } from '@heroicons/react/24/outline'
 export default function CheckoutSuccess() {
     const searchParams = useSearchParams()
     const orderId = searchParams.get('orderId')
+    const isGuest = searchParams.get('guest') === 'true'
     const { clearCart } = useCartStore()
 
     useEffect(() => {
@@ -31,6 +32,13 @@ export default function CheckoutSuccess() {
                     <p className="text-lg text-gray-600">
                         Thank you for your order. We're getting it ready for you.
                     </p>
+                    {isGuest && (
+                        <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <p className="text-blue-700 text-sm">
+                                <strong>Guest Order:</strong> You can track your order using your email and order number.
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Order Details */}
@@ -107,7 +115,10 @@ export default function CheckoutSuccess() {
                 {/* Next Steps */}
                 <div className="text-center space-y-4">
                     <p className="text-gray-600">
-                        We've sent a confirmation email with your order details. You can also track your order status from your account.
+                        {isGuest
+                            ? "We've sent a confirmation email with your order details. You can track your order using your email and order number."
+                            : "We've sent a confirmation email with your order details. You can also track your order status from your account."
+                        }
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -117,12 +128,22 @@ export default function CheckoutSuccess() {
                         >
                             Continue Shopping
                         </Link>
-                        <Link
-                            href="/orders"
-                            className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-                        >
-                            View Orders
-                        </Link>
+                        {!isGuest && (
+                            <Link
+                                href="/orders"
+                                className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                            >
+                                View Orders
+                            </Link>
+                        )}
+                        {isGuest && (
+                            <Link
+                                href="/auth/signup"
+                                className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                            >
+                                Create Account
+                            </Link>
+                        )}
                     </div>
 
                     <p className="text-sm text-gray-500">

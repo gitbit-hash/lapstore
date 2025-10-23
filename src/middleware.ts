@@ -1,3 +1,4 @@
+// src/middleware.ts
 import { withAuth } from 'next-auth/middleware'
 import { UserRole } from './app/types'
 
