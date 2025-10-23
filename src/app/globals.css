@@ -5,6 +5,22 @@
   --foreground: #171717;
 }
 
+@layer base {
+
+  /* Improve input text contrast */
+  input,
+  textarea,
+  select {
+    @apply text-gray-900 placeholder-gray-500;
+  }
+
+  /* Ensure good contrast for all form elements */
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray-500;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
