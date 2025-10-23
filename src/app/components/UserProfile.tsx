@@ -8,6 +8,7 @@ interface UserProfileProps {
     email: string
     role: string
     emailVerified: Date | null
+    phone: string,
     image: string | null
     createdAt: Date
     updatedAt: Date
@@ -42,6 +43,14 @@ interface UserProfileProps {
   }
 }
 
+function formatPhoneNumber(phone: string) {
+  const numbers = phone.replace(/\D/g, '')
+  if (numbers.length === 11) {
+    return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 11)}`
+  }
+  return phone // Return as-is if not standard length
+}
+
 export default function UserProfile({ user }: UserProfileProps) {
   // Safely get arrays with fallbacks
   const orders = user.orders || []
@@ -67,6 +76,12 @@ export default function UserProfile({ user }: UserProfileProps) {
             <div className="flex justify-between">
               <span className="text-sm font-medium text-gray-500">Email</span>
               <span className="text-sm text-gray-900">{user.email}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm font-medium text-gray-500">Phone</span>
+              <span className="text-sm text-gray-900">
+                {user.phone ? formatPhoneNumber(user.phone) : 'Not provided'}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm font-medium text-gray-500">Member Since</span>

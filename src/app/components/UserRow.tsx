@@ -10,6 +10,7 @@ interface UserRowProps {
     id: string
     name: string | null
     email: string
+    phone: string,
     role: UserRole
     emailVerified: Date | null
     createdAt: Date
@@ -62,6 +63,14 @@ export default function UserRow({ user }: UserRowProps) {
     }
   }
 
+  function formatPhoneNumber(phone: string) {
+    const numbers = phone.replace(/\D/g, '')
+    if (numbers.length === 11) {
+      return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 11)}`
+    }
+    return phone // Return as-is if not standard length
+  }
+
   return (
     <tr className="hover:bg-gray-50 transition-colors">
       <td className="px-6 py-4 whitespace-nowrap">
@@ -70,6 +79,11 @@ export default function UserRow({ user }: UserRowProps) {
             {user.name || 'No Name'}
           </div>
           <div className="text-sm text-gray-500">{user.email}</div>
+          {user.phone && (
+            <div className="text-sm text-gray-400">
+              {formatPhoneNumber(user.phone)}
+            </div>
+          )}
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">

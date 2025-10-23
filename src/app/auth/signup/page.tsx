@@ -1,4 +1,4 @@
-// /src/app/auth/signup/page.tsx - Updated error handling
+// src/app/auth/signup/page.tsx - Updated with required phone
 'use client'
 
 import { useState } from 'react'
@@ -12,7 +12,8 @@ export default function SignUp() {
         name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        phone: '' // Add phone field
     })
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -20,10 +21,30 @@ export default function SignUp() {
     const router = useRouter()
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }))
+        const { name, value } = e.target
+
+        // Auto-format phone number as user types (numbers only)
+        if (name === 'phone') {
+            // Remove all non-digit characters
+            const numbersOnly = value.replace(/\D/g, '')
+            setFormData(prev => ({
+                ...prev,
+                [name]: numbersOnly
+            }))
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }))
+        }
+    }
+
+    const formatPhoneDisplay = (phone: string) => {
+        // Format for display: (011)12345678
+        const numbers = phone.replace(/\D/g, '')
+        if (numbers.length <= 3) return numbers
+        if (numbers.length <= 6) return `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`
+        return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 11)}`
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -44,6 +65,20 @@ export default function SignUp() {
             return
         }
 
+        // Phone validation
+        const cleanPhone = formData.phone.replace(/\D/g, '')
+        if (cleanPhone.length < 10) {
+            setError('Phone number must be at least 10 digits')
+            setIsLoading(false)
+            return
+        }
+
+        if (cleanPhone.length > 15) {
+            setError('Phone number cannot exceed 15 digits')
+            setIsLoading(false)
+            return
+        }
+
         try {
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
@@ -54,6 +89,7 @@ export default function SignUp() {
                     name: formData.name,
                     email: formData.email,
                     password: formData.password,
+                    phone: cleanPhone, // Send cleaned phone
                 }),
             })
 
@@ -112,7 +148,7 @@ export default function SignUp() {
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                Full Name
+                                Full Name *
                             </label>
                             <div className="mt-1">
                                 <input
@@ -131,7 +167,7 @@ export default function SignUp() {
 
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email address
+                                Email address *
                             </label>
                             <div className="mt-1">
                                 <input
@@ -148,9 +184,32 @@ export default function SignUp() {
                             </div>
                         </div>
 
+                        {/* Phone Number Field */}
+                        <div>
+                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                                Phone Number *
+                            </label>
+                            <div className="mt-1">
+                                <input
+                                    id="phone"
+                                    name="phone"
+                                    autoComplete="tel"
+                                    required
+                                    value={formatPhoneDisplay(formData.phone)}
+                                    onChange={handleChange}
+                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="(123) 456-7890"
+                                    maxLength={18} // For formatted display
+                                />
+                            </div>
+                            <p className="mt-1 text-xs text-gray-500">
+                                Numbers only, 10-15 digits. Used for order updates and important notifications.
+                            </p>
+                        </div>
+
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                Password
+                                Password *
                             </label>
                             <div className="mt-1 relative">
                                 <input
@@ -184,7 +243,7 @@ export default function SignUp() {
 
                         <div>
                             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                                Confirm Password
+                                Confirm Password *
                             </label>
                             <div className="mt-1">
                                 <input

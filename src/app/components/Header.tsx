@@ -1,4 +1,4 @@
-// src/app/components/Header.tsx - Updated with auth
+// src/app/components/Header.tsx - Updated to hide orders for all admins
 'use client'
 
 import { ShoppingCartIcon, UserCircleIcon } from '@heroicons/react/24/outline'
@@ -6,11 +6,15 @@ import Link from 'next/link'
 import { useCartStore } from '../stores/cartStore'
 import { useSession, signOut } from 'next-auth/react'
 import { useState } from 'react'
+import { UserRole } from '../types'
 
 export default function Header() {
     const { toggleCart, getTotalItems } = useCartStore()
     const { data: session, status } = useSession()
     const [showUserMenu, setShowUserMenu] = useState(false)
+
+    const isAdmin = session?.user?.role === UserRole.ADMIN || session?.user?.role === UserRole.SUPER_ADMIN
+    const isCustomer = !isAdmin // Regular customer
 
     return (
         <header className="bg-white shadow-sm border-b sticky top-0 z-30">
@@ -39,6 +43,13 @@ export default function Header() {
                         <Link href="/products?categories=business-laptops" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                             Business
                         </Link>
+
+                        {/* Show Dashboard link for Admins */}
+                        {isAdmin && (
+                            <Link href="/admin" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                                Dashboard
+                            </Link>
+                        )}
                     </nav>
 
                     {/* Cart & Actions */}
@@ -85,7 +96,12 @@ export default function Header() {
                                             <p className="text-sm text-gray-500 truncate">
                                                 {session.user?.email}
                                             </p>
+                                            <p className="text-xs text-gray-400 capitalize mt-1">
+                                                {session.user?.role?.toLowerCase().replace('_', ' ')}
+                                            </p>
                                         </div>
+
+                                        {/* Profile Link */}
                                         <Link
                                             href="/profile"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -93,22 +109,30 @@ export default function Header() {
                                         >
                                             Your Profile
                                         </Link>
-                                        <Link
-                                            href="/orders"
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                            onClick={() => setShowUserMenu(false)}
-                                        >
-                                            Your Orders
-                                        </Link>
-                                        {session.user?.role === 'ADMIN' && (
+
+                                        {/* Orders Link - Only show for regular customers */}
+                                        {isCustomer && (
+                                            <Link
+                                                href="/orders"
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                onClick={() => setShowUserMenu(false)}
+                                            >
+                                                Your Orders
+                                            </Link>
+                                        )}
+
+                                        {/* Admin Dashboard Link - Show for all admins */}
+                                        {isAdmin && (
                                             <Link
                                                 href="/admin"
-                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-t border-gray-100"
                                                 onClick={() => setShowUserMenu(false)}
                                             >
                                                 Admin Dashboard
                                             </Link>
                                         )}
+
+                                        {/* Sign Out */}
                                         <button
                                             onClick={() => {
                                                 signOut()
