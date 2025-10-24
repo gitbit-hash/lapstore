@@ -8,7 +8,7 @@ import { UserRole } from '@/app/types'
 // GET address details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -17,8 +17,10 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
+
     const address = await prisma.address.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {
@@ -44,7 +46,7 @@ export async function GET(
 // UPDATE address (without name field)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -60,9 +62,11 @@ export async function PUT(
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    const { id } = await params
+
     // Get existing address to check user
     const existingAddress = await prisma.address.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existingAddress) {
@@ -75,14 +79,14 @@ export async function PUT(
         where: {
           userId: existingAddress.userId,
           isDefault: true,
-          id: { not: params.id }
+          id: { not: id }
         },
         data: { isDefault: false }
       })
     }
 
     const address = await prisma.address.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         street,
         city,
@@ -113,7 +117,7 @@ export async function PUT(
 // DELETE address
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -122,8 +126,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
+
     const address = await prisma.address.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!address) {
@@ -139,7 +145,7 @@ export async function DELETE(
     }
 
     await prisma.address.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true, message: 'Address deleted successfully' })

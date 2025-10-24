@@ -7,7 +7,7 @@ import { UserRole } from '../../../../types'
 // GET single order
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -16,8 +16,10 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
+
     const order = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         customer: {
           select: {
@@ -55,7 +57,7 @@ export async function GET(
 // PUT update order status
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -72,9 +74,11 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
     }
 
+    const { id } = await params
+
     // Check if order exists
     const existingOrder = await prisma.order.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existingOrder) {
@@ -82,7 +86,7 @@ export async function PUT(
     }
 
     const order = await prisma.order.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         status,
         updatedAt: new Date()

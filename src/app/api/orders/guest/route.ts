@@ -145,11 +145,13 @@ export async function POST(request: NextRequest) {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
+
     const order = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         orderItems: {
           include: {

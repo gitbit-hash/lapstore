@@ -1,5 +1,4 @@
 // src/app/page.tsx
-import Header from './components/Header'
 import ProductGrid from './components/ProductGrid'
 import { getProducts } from './actions/products'
 import Link from 'next/link'
@@ -10,8 +9,6 @@ export default async function Home() {
 
   return (
     <main>
-      <Header />
-
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="container mx-auto px-4 py-20">

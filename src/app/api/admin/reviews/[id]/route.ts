@@ -8,7 +8,7 @@ import { UserRole } from '@/app/types'
 // DELETE review
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -17,9 +17,11 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
+
     // Check if review exists
     const review = await prisma.review.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!review) {
@@ -28,7 +30,7 @@ export async function DELETE(
 
     // Delete the review
     await prisma.review.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true, message: 'Review deleted successfully' })

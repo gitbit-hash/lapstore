@@ -9,6 +9,20 @@ interface ProductFormProps {
   initialData?: any
 }
 
+// Default empty specifications
+const defaultSpecifications = {
+  processor: '',
+  memory: '',
+  storage: '',
+  display: '',
+  graphics: '',
+  os: '',
+  battery: '',
+  weight: '',
+  ports: '',
+  connectivity: ''
+}
+
 export default function ProductForm({ onSubmit, isLoading = false, initialData }: ProductFormProps) {
   const [categories, setCategories] = useState<Category[]>([])
   const [formData, setFormData] = useState({
@@ -18,16 +32,12 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
     inventory: initialData?.inventory || 0,
     categoryId: initialData?.categoryId || '',
     images: initialData?.images || [''],
-    specifications: initialData?.specifications || {
-      processor: '',
-      memory: '',
-      storage: '',
-      display: '',
-      graphics: ''
-    },
+    specifications: initialData?.specifications || defaultSpecifications,
     isActive: initialData?.isActive ?? true
   })
   const [isLoadingCategories, setIsLoadingCategories] = useState(false)
+  const [newSpecKey, setNewSpecKey] = useState('')
+  const [newSpecValue, setNewSpecValue] = useState('')
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -45,6 +55,7 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
 
     fetchCategories()
   }, [])
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -52,9 +63,7 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
       ...formData,
       price: parseFloat(formData.price),
       inventory: parseInt(formData.inventory.toString()),
-      specifications: Object.fromEntries(
-        Object.entries(formData.specifications).filter(([_, value]) => value !== '')
-      )
+      specifications: formData.specifications
     }
 
     onSubmit(submitData)
@@ -87,6 +96,29 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
     }))
   }
 
+  const addCustomSpecification = () => {
+    if (newSpecKey.trim() && newSpecValue.trim()) {
+      const key = newSpecKey.trim()
+      handleSpecificationChange(key, newSpecValue.trim())
+      setNewSpecKey('')
+      setNewSpecValue('')
+    }
+  }
+
+  const removeSpecification = (key: string) => {
+    setFormData(prev => {
+      const newSpecs = { ...prev.specifications }
+      delete newSpecs[key]
+      return {
+        ...prev,
+        specifications: newSpecs
+      }
+    })
+  }
+
+  // Get all specification keys from current specifications
+  const specificationKeys = Object.keys(formData.specifications)
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Basic Information */}
@@ -104,7 +136,7 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
               required
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               placeholder="Enter product name"
             />
           </div>
@@ -118,7 +150,7 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
               rows={4}
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               placeholder="Enter product description"
             />
           </div>
@@ -136,7 +168,7 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
                 step="0.01"
                 value={formData.price}
                 onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 placeholder="0.00"
               />
             </div>
@@ -152,7 +184,7 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
                 min="0"
                 value={formData.inventory}
                 onChange={(e) => setFormData(prev => ({ ...prev, inventory: parseInt(e.target.value) || 0 }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 placeholder="0"
               />
             </div>
@@ -167,7 +199,7 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
               required
               value={formData.categoryId}
               onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
             >
               <option value="">Select a category</option>
               {categories.map((category) => (
@@ -191,7 +223,7 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
                 type="url"
                 value={image}
                 onChange={(e) => handleImageChange(index, e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 placeholder="https://example.com/image.jpg"
               />
               {formData.images.length > 1 && (
@@ -220,70 +252,68 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Specifications</h2>
 
+        {initialData?.specifications && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <p className="text-sm text-blue-700">
+              Editing specifications for: <strong>{initialData.name}</strong>
+            </p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Processor
-            </label>
-            <input
-              type="text"
-              value={formData.specifications.processor}
-              onChange={(e) => handleSpecificationChange('processor', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g., Intel Core i7"
-            />
-          </div>
+          {specificationKeys.map((key) => (
+            <div key={key} className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+                {key.replace(/([A-Z])/g, ' $1').trim()}
+              </label>
+              <input
+                type="text"
+                value={formData.specifications[key] || ''}
+                onChange={(e) => handleSpecificationChange(key, e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 pr-10"
+                placeholder={`Enter ${key.replace(/([A-Z])/g, ' $1').trim().toLowerCase()}`}
+              />
+              {/* Remove button for custom specifications that aren't in default set */}
+              {!Object.keys(defaultSpecifications).includes(key) && (
+                <button
+                  type="button"
+                  onClick={() => removeSpecification(key)}
+                  className="absolute right-2 top-7 text-red-500 hover:text-red-700"
+                  title="Remove this specification"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Memory
-            </label>
+        {/* Add New Specification Field */}
+        <div className="mt-6 pt-6 border-t border-gray-200">
+          <h3 className="text-lg font-medium text-gray-900 mb-3">Add Custom Specification</h3>
+          <div className="flex space-x-2">
             <input
               type="text"
-              value={formData.specifications.memory}
-              onChange={(e) => handleSpecificationChange('memory', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g., 16GB DDR4"
+              value={newSpecKey}
+              onChange={(e) => setNewSpecKey(e.target.value)}
+              placeholder="Specification name (e.g., Warranty)"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Storage
-            </label>
             <input
               type="text"
-              value={formData.specifications.storage}
-              onChange={(e) => handleSpecificationChange('storage', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g., 512GB SSD"
+              value={newSpecValue}
+              onChange={(e) => setNewSpecValue(e.target.value)}
+              placeholder="Specification value"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Display
-            </label>
-            <input
-              type="text"
-              value={formData.specifications.display}
-              onChange={(e) => handleSpecificationChange('display', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g., 15.6\ FHD"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Graphics
-            </label>
-            <input
-              type="text"
-              value={formData.specifications.graphics}
-              onChange={(e) => handleSpecificationChange('graphics', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g., NVIDIA RTX 4060"
-            />
+            <button
+              type="button"
+              onClick={addCustomSpecification}
+              disabled={!newSpecKey.trim() || !newSpecValue.trim()}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            >
+              Add
+            </button>
           </div>
         </div>
       </div>

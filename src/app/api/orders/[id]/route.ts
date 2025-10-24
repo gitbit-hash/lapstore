@@ -5,7 +5,7 @@ import { prisma } from './../../../lib/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -14,9 +14,11 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
+
     const order = await prisma.order.findUnique({
       where: {
-        id: params.id,
+        id,
         customerId: session.user.id // Ensure users only see their own orders
       },
       include: {

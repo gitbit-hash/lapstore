@@ -1,7 +1,6 @@
 // src/app/products/page.tsx - Updated with awaited searchParams
 import ProductGrid from '../components/ProductGrid'
 import ProductFilters from '../components/ProductFilters'
-import SearchBar from '../components/SearchBar'
 import { getProducts } from '../actions/products'
 import { getCategories } from '../actions/categories'
 
@@ -54,7 +53,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 <div className="container mx-auto px-4 py-8">
                     <div className="flex flex-col items-center mb-6">
                         <h1 className="text-3xl font-bold text-gray-900 mb-4">All Products</h1>
-                        <SearchBar />
                     </div>
 
                     {/* Active Filters */}

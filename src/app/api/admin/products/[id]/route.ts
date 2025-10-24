@@ -1,23 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../../lib/auth'
-import { prisma } from '../../../../lib/prisma'
-import { UserRole } from '../../../../types'
+import { authOptions } from '@/app/lib/auth'
+import { prisma } from '@/app/lib/prisma'
+import { UserRole } from '@/app/types'
 
 // GET single product
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
+    const { id } = await params
 
     if (!session || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.SUPER_ADMIN)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         category: true
       }
@@ -37,10 +38,11 @@ export async function GET(
 // PUT update product
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
+    const { id } = await params
 
     if (!session || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.SUPER_ADMIN)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -58,7 +60,7 @@ export async function PUT(
 
     // Check if product exists
     const existingProduct = await prisma.product.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existingProduct) {
@@ -68,16 +70,24 @@ export async function PUT(
     // Filter out empty images
     const filteredImages = data.images.filter((image: string) => image.trim() !== '')
 
+    // Clean specifications - remove empty values but keep the structure
+    const cleanSpecifications = data.specifications ?
+      Object.fromEntries(
+        Object.entries(data.specifications).filter(([_, value]) =>
+          value !== null && value !== undefined && value !== ''
+        )
+      ) : {}
+
     const product = await prisma.product.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: data.name,
         description: data.description,
-        price: data.price,
-        inventory: data.inventory,
+        price: parseFloat(data.price),
+        inventory: parseInt(data.inventory.toString()),
         categoryId: data.categoryId,
         images: filteredImages,
-        specifications: data.specifications,
+        specifications: cleanSpecifications,
         isActive: data.isActive,
         updatedAt: new Date()
       },
@@ -96,10 +106,11 @@ export async function PUT(
 // DELETE product (soft delete by setting isActive to false)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
+    const { id } = await params
 
     if (!session || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.SUPER_ADMIN)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -107,7 +118,7 @@ export async function DELETE(
 
     // Check if product exists
     const existingProduct = await prisma.product.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existingProduct) {
@@ -116,7 +127,7 @@ export async function DELETE(
 
     // Soft delete by setting isActive to false
     const product = await prisma.product.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         isActive: false,
         updatedAt: new Date()

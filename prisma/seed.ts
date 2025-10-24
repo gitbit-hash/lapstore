@@ -1,4 +1,3 @@
-// prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -6,17 +5,34 @@ const prisma = new PrismaClient();
 async function main() {
     console.log('🌱 Starting database seed...');
 
-    // Create Categories
+    // Create Categories with new structure
     const categories = await prisma.category.createMany({
         data: [
+            // Laptops
             { name: 'Gaming Laptops', slug: 'gaming-laptops' },
             { name: 'Business Laptops', slug: 'business-laptops' },
+            { name: 'Standard Laptops', slug: 'standard-laptops' },
+
+            // PC & Components
             { name: 'Gaming Desktops', slug: 'gaming-desktops' },
             { name: 'Workstation Desktops', slug: 'workstation-desktops' },
-            { name: 'Monitors', slug: 'monitors' },
-            { name: 'Keyboards', slug: 'keyboards' },
-            { name: 'Mice', slug: 'mice' },
-            { name: 'Components', slug: 'components' },
+            { name: 'Graphics Cards', slug: 'graphics-cards' },
+            { name: 'PC RAM', slug: 'pc-ram' },
+
+            // Storage
+            { name: 'SSD Storage', slug: 'ssd-storage' },
+            { name: 'Mechanical Hard Drives', slug: 'mechanical-hard-drives' },
+
+            // Monitors
+            { name: 'Gaming Monitors', slug: 'gaming-monitors' },
+            { name: 'Professional Monitors', slug: 'professional-monitors' },
+            { name: 'Standard Monitors', slug: 'standard-monitors' },
+
+            // Accessories
+            { name: 'Gaming Mice', slug: 'gaming-mice' },
+            { name: 'Office Mice', slug: 'office-mice' },
+            { name: 'Mechanical Keyboards', slug: 'mechanical-keyboards' },
+            { name: 'Membrane Keyboards', slug: 'membrane-keyboards' },
         ],
         skipDuplicates: true,
     });
@@ -24,13 +40,21 @@ async function main() {
     // Get category IDs for product creation
     const gamingLaptops = await prisma.category.findFirst({ where: { slug: 'gaming-laptops' } });
     const businessLaptops = await prisma.category.findFirst({ where: { slug: 'business-laptops' } });
-    const monitors = await prisma.category.findFirst({ where: { slug: 'monitors' } });
-    const keyboards = await prisma.category.findFirst({ where: { slug: 'keyboards' } });
-    const mice = await prisma.category.findFirst({ where: { slug: 'mice' } });
+    const gamingDesktops = await prisma.category.findFirst({ where: { slug: 'gaming-desktops' } });
+    const workstationDesktops = await prisma.category.findFirst({ where: { slug: 'workstation-desktops' } });
+    const graphicsCards = await prisma.category.findFirst({ where: { slug: 'graphics-cards' } });
+    const pcRam = await prisma.category.findFirst({ where: { slug: 'pc-ram' } });
+    const ssdStorage = await prisma.category.findFirst({ where: { slug: 'ssd-storage' } });
+    const mechanicalHD = await prisma.category.findFirst({ where: { slug: 'mechanical-hard-drives' } });
+    const gamingMonitors = await prisma.category.findFirst({ where: { slug: 'gaming-monitors' } });
+    const professionalMonitors = await prisma.category.findFirst({ where: { slug: 'professional-monitors' } });
+    const gamingMice = await prisma.category.findFirst({ where: { slug: 'gaming-mice' } });
+    const mechanicalKeyboards = await prisma.category.findFirst({ where: { slug: 'mechanical-keyboards' } });
 
-    // Create Products
+    // Create Products for all categories
     const createdProducts = await prisma.product.createMany({
         data: [
+            // Gaming Laptops
             {
                 name: 'ASUS ROG Zephyrus G14',
                 description: 'Powerful 14-inch gaming laptop with AMD Ryzen 9 and RTX 4060',
@@ -48,44 +72,6 @@ async function main() {
                     storage: '1TB NVMe SSD',
                     display: '14-inch QHD+ 165Hz',
                     os: 'Windows 11 Home'
-                }
-            },
-            {
-                name: 'Dell XPS 13',
-                description: 'Premium business laptop with stunning InfinityEdge display',
-                price: 1199.99,
-                images: [
-                    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&h=300&fit=crop',
-                    'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=500&h=300&fit=crop'
-                ],
-                categoryId: businessLaptops!.id,
-                inventory: 25,
-                specifications: {
-                    processor: 'Intel Core i7-1355U',
-                    graphics: 'Intel Iris Xe',
-                    memory: '16GB LPDDR5',
-                    storage: '512GB NVMe SSD',
-                    display: '13.4-inch FHD+',
-                    os: 'Windows 11 Pro'
-                }
-            },
-            {
-                name: 'Alienware AW3423DW',
-                description: '34-inch QD-OLED gaming monitor with 175Hz refresh rate',
-                price: 1299.99,
-                images: [
-                    'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&h=300&fit=crop',
-                    'https://images.unsplash.com/photo-1551645120-d5b3af3c6e49?w=500&h=300&fit=crop'
-                ],
-                categoryId: monitors!.id,
-                inventory: 8,
-                specifications: {
-                    size: '34-inch',
-                    resolution: '3440x1440',
-                    panel: 'QD-OLED',
-                    refreshRate: '175Hz',
-                    responseTime: '0.1ms',
-                    ports: 'HDMI 2.1, DisplayPort 1.4'
                 }
             },
             {
@@ -107,6 +93,27 @@ async function main() {
                     os: 'Windows 11 Home'
                 }
             },
+
+            // Business Laptops
+            {
+                name: 'Dell XPS 13',
+                description: 'Premium business laptop with stunning InfinityEdge display',
+                price: 1199.99,
+                images: [
+                    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&h=300&fit=crop',
+                    'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=500&h=300&fit=crop'
+                ],
+                categoryId: businessLaptops!.id,
+                inventory: 25,
+                specifications: {
+                    processor: 'Intel Core i7-1355U',
+                    graphics: 'Intel Iris Xe',
+                    memory: '16GB LPDDR5',
+                    storage: '512GB NVMe SSD',
+                    display: '13.4-inch FHD+',
+                    os: 'Windows 11 Pro'
+                }
+            },
             {
                 name: 'Apple MacBook Pro 16"',
                 description: 'Professional laptop with M3 Pro chip for extreme performance',
@@ -126,6 +133,129 @@ async function main() {
                     os: 'macOS Sonoma'
                 }
             },
+
+            // Gaming Desktops
+            {
+                name: 'Alienware Aurora R15',
+                description: 'High-performance gaming desktop with RTX 4080',
+                price: 2899.99,
+                images: [
+                    'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=500&h=300&fit=crop',
+                    'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=500&h=300&fit=crop'
+                ],
+                categoryId: gamingDesktops!.id,
+                inventory: 8,
+                specifications: {
+                    processor: 'Intel Core i9-13900KF',
+                    graphics: 'NVIDIA GeForce RTX 4080',
+                    memory: '32GB DDR5',
+                    storage: '2TB NVMe SSD',
+                    powerSupply: '1000W',
+                    cooling: 'Liquid Cooling'
+                }
+            },
+
+            // Graphics Cards
+            {
+                name: 'NVIDIA GeForce RTX 4090',
+                description: 'Flagship graphics card for extreme gaming performance',
+                price: 1599.99,
+                images: [
+                    'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=500&h=300&fit=crop',
+                    'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=500&h=300&fit=crop'
+                ],
+                categoryId: graphicsCards!.id,
+                inventory: 5,
+                specifications: {
+                    memory: '24GB GDDR6X',
+                    coreClock: '2235 MHz',
+                    memoryInterface: '384-bit',
+                    powerConnectors: '3x 8-pin',
+                    recommendedPSU: '850W'
+                }
+            },
+
+            // PC RAM
+            {
+                name: 'Corsair Vengeance RGB 32GB DDR5',
+                description: 'High-performance DDR5 memory with RGB lighting',
+                price: 149.99,
+                images: [
+                    'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=500&h=300&fit=crop',
+                    'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=500&h=300&fit=crop'
+                ],
+                categoryId: pcRam!.id,
+                inventory: 30,
+                specifications: {
+                    capacity: '32GB (2x16GB)',
+                    speed: '5600MHz',
+                    type: 'DDR5',
+                    latency: 'CL36',
+                    voltage: '1.25V'
+                }
+            },
+
+            // SSD Storage
+            {
+                name: 'Samsung 980 Pro 2TB NVMe SSD',
+                description: 'High-speed PCIe 4.0 NVMe SSD for gaming and productivity',
+                price: 199.99,
+                images: [
+                    'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=500&h=300&fit=crop'
+                ],
+                categoryId: ssdStorage!.id,
+                inventory: 40,
+                specifications: {
+                    capacity: '2TB',
+                    interface: 'PCIe 4.0 NVMe',
+                    readSpeed: '7000 MB/s',
+                    writeSpeed: '5000 MB/s',
+                    endurance: '1200 TBW'
+                }
+            },
+
+            // Gaming Monitors
+            {
+                name: 'Alienware AW3423DW',
+                description: '34-inch QD-OLED gaming monitor with 175Hz refresh rate',
+                price: 1299.99,
+                images: [
+                    'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&h=300&fit=crop',
+                    'https://images.unsplash.com/photo-1551645120-d5b3af3c6e49?w=500&h=300&fit=crop'
+                ],
+                categoryId: gamingMonitors!.id,
+                inventory: 8,
+                specifications: {
+                    size: '34-inch',
+                    resolution: '3440x1440',
+                    panel: 'QD-OLED',
+                    refreshRate: '175Hz',
+                    responseTime: '0.1ms',
+                    ports: 'HDMI 2.1, DisplayPort 1.4'
+                }
+            },
+
+            // Gaming Mice
+            {
+                name: 'Razer DeathAdder V3 Pro',
+                description: 'Wireless gaming mouse with 30K DPI optical sensor',
+                price: 149.99,
+                images: [
+                    'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=500&h=300&fit=crop',
+                    'https://images.unsplash.com/photo-1563297007-0686b7003af7?w=500&h=300&fit=crop'
+                ],
+                categoryId: gamingMice!.id,
+                inventory: 25,
+                specifications: {
+                    sensor: 'Focus Pro 30K Optical',
+                    dpi: '30000',
+                    buttons: '8 Programmable',
+                    weight: '63g',
+                    connectivity: '2.4GHz Wireless, Bluetooth'
+                }
+            },
+
+            // Mechanical Keyboards
             {
                 name: 'Logitech MX Mechanical',
                 description: 'Wireless mechanical keyboard with smart illumination',
@@ -134,7 +264,7 @@ async function main() {
                     'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=500&h=300&fit=crop',
                     'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&h=300&fit=crop'
                 ],
-                categoryId: keyboards!.id,
+                categoryId: mechanicalKeyboards!.id,
                 inventory: 30,
                 specifications: {
                     type: 'Mechanical',
@@ -142,24 +272,6 @@ async function main() {
                     backlight: 'RGB Smart Illumination',
                     battery: 'Up to 15 days',
                     layout: 'US QWERTY'
-                }
-            },
-            {
-                name: 'Razer DeathAdder V3',
-                description: 'Lightweight gaming mouse with 30K DPI optical sensor',
-                price: 69.99,
-                images: [
-                    'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=500&h=300&fit=crop',
-                    'https://images.unsplash.com/photo-1563297007-0686b7003af7?w=500&h=300&fit=crop'
-                ],
-                categoryId: mice!.id,
-                inventory: 40,
-                specifications: {
-                    sensor: 'Focus Pro 30K Optical',
-                    dpi: '30000',
-                    buttons: '8 Programmable',
-                    weight: '59g',
-                    connectivity: 'USB-C'
                 }
             }
         ],
@@ -177,53 +289,9 @@ async function main() {
         },
     });
 
-    // Get all products and users for creating reviews
-    const allProducts = await prisma.product.findMany();
-    const allUsers = await prisma.user.findMany();
-
-    // Create sample reviews if we have products and users
-    if (allProducts.length > 0 && allUsers.length > 0) {
-        await prisma.review.createMany({
-            data: [
-                {
-                    productId: allProducts[0].id,
-                    userId: allUsers[0].id,
-                    rating: 5,
-                    comment: 'Amazing gaming laptop! Runs all my games on ultra settings.'
-                },
-                {
-                    productId: allProducts[0].id,
-                    userId: allUsers[0].id,
-                    rating: 4,
-                    comment: 'Great performance, but battery life could be better.'
-                },
-                {
-                    productId: allProducts[1].id,
-                    userId: allUsers[0].id,
-                    rating: 5,
-                    comment: 'Perfect for business trips. Lightweight and powerful.'
-                },
-                {
-                    productId: allProducts[2].id,
-                    userId: allUsers[0].id,
-                    rating: 5,
-                    comment: 'The OLED display is absolutely stunning! Best monitor I have ever owned.'
-                },
-                {
-                    productId: allProducts[3].id,
-                    userId: allUsers[0].id,
-                    rating: 4,
-                    comment: 'Solid gaming performance, but runs a bit hot under heavy load.'
-                }
-            ],
-            skipDuplicates: true,
-        });
-    }
-
     console.log('✅ Database seeded successfully');
-    console.log(`📦 Created ${allProducts.length} products`);
-    console.log(`👥 Created ${allUsers.length} users`);
-    console.log(`⭐ Created sample reviews`);
+    console.log(`📦 Created products across all categories`);
+    console.log(`👥 Created admin user`);
 }
 
 main()

@@ -11,7 +11,7 @@ interface AdminOrdersPageProps {
   searchParams: Promise<{
     search?: string
     filter?: string
-  }>
+  }>,
 }
 
 export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageProps) {

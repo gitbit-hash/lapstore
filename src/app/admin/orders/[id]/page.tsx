@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/app/lib/prisma'
 import { UserRole } from '@/app/types'
 import Link from 'next/link'
+import { OrderStatusUpdate } from '@/app/components/OrderStatusUpdate'
 
 interface OrderDetailPageProps {
   params: Promise<{ id: string }>
@@ -146,9 +147,9 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium text-gray-900">`${item.price.toFixed(0)} EGP`</p>
+                      <p className="font-medium text-gray-900">${item.price.toFixed(2)}</p>
                       <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
-                      <p className="font-medium text-gray-900">`${(item.price * item.quantity).toFixed(0)} EGP`</p>
+                      <p className="font-medium text-gray-900">${(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                   </div>
                 ))}
@@ -203,10 +204,10 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               <div className="flex justify-between">
                 <span className="text-gray-600">Status</span>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
-                  order.status === 'SHIPPED' ? 'bg-blue-100 text-blue-800' :
-                    order.status === 'PROCESSING' ? 'bg-yellow-100 text-yellow-800' :
-                      order.status === 'PENDING' ? 'bg-gray-100 text-gray-800' :
-                        'bg-red-100 text-red-800'
+                    order.status === 'SHIPPED' ? 'bg-blue-100 text-blue-800' :
+                      order.status === 'PROCESSING' ? 'bg-yellow-100 text-yellow-800' :
+                        order.status === 'PENDING' ? 'bg-gray-100 text-gray-800' :
+                          'bg-red-100 text-red-800'
                   }`}>
                   {order.status}
                 </span>
@@ -274,48 +275,27 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal ({totalItems} items)</span>
-                <span className="text-gray-900">`${subtotal.toFixed(0)} EGP`</span>
+                <span className="text-gray-900">${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping</span>
                 <span className="text-gray-900">
-                  {shipping === 0 ? 'FREE' : `${shipping.toFixed(0)} EGP`}
+                  {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Tax</span>
-                <span className="text-gray-900">`${tax.toFixed(0)} EGP`</span>
+                <span className="text-gray-900">${tax.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-lg font-semibold border-t border-gray-200 pt-2">
                 <span>Total</span>
-                <span>`${order.total.toFixed(0)} EGP`</span>
+                <span>${order.total.toFixed(2)}</span>
               </div>
             </div>
           </div>
 
           {/* Order Actions */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Order Actions</h2>
-            <div className="space-y-2">
-              <select
-                defaultValue={order.status}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
-              >
-                <option value="PENDING">Pending</option>
-                <option value="CONFIRMED">Confirmed</option>
-                <option value="PROCESSING">Processing</option>
-                <option value="SHIPPED">Shipped</option>
-                <option value="DELIVERED">Delivered</option>
-                <option value="CANCELLED">Cancelled</option>
-              </select>
-              <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
-                Update Status
-              </button>
-              <button className="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors">
-                Print Invoice
-              </button>
-            </div>
-          </div>
+          <OrderStatusUpdate order={order} />
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ import { UserRole } from '@/app/types'
 // GET user details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -17,8 +17,10 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
+
     const user = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         id: true,
         name: true,
@@ -71,7 +73,7 @@ export async function GET(
 // UPDATE user role
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -87,8 +89,10 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
     }
 
+    const { id } = await params
+
     // Prevent self-demotion
-    if (params.id === session.user.id && role !== UserRole.SUPER_ADMIN) {
+    if (id === session.user.id && role !== UserRole.SUPER_ADMIN) {
       return NextResponse.json(
         { error: 'Cannot change your own role from SUPER_ADMIN' },
         { status: 400 }
@@ -96,7 +100,7 @@ export async function PUT(
     }
 
     const user = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: { role },
       select: {
         id: true,
