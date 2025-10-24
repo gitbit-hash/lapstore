@@ -1,6 +1,7 @@
-// src/app/products/page.tsx - Updated with awaited searchParams
 import ProductGrid from '../components/ProductGrid'
 import ProductFilters from '../components/ProductFilters'
+import SearchBar from '../components/SearchBar'
+import Pagination from '../components/Pagination'
 import { getProducts } from '../actions/products'
 import { getCategories } from '../actions/categories'
 
@@ -24,12 +25,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     const maxPrice = Array.isArray(safeSearchParams.maxPrice) ? safeSearchParams.maxPrice[0] : safeSearchParams.maxPrice
     const categories = Array.isArray(safeSearchParams.categories) ? safeSearchParams.categories[0] : safeSearchParams.categories
 
+    const currentPage = page ? parseInt(page) : 1
+
     const [productsData, categoriesData] = await Promise.all([
         getProducts({
             category: category || undefined,
             search: search || undefined,
             sort: sort || undefined,
-            page: page ? parseInt(page) : 1,
+            page: currentPage,
             minPrice: minPrice ? parseFloat(minPrice) : undefined,
             maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
             categories: categories || undefined
@@ -53,6 +56,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 <div className="container mx-auto px-4 py-8">
                     <div className="flex flex-col items-center mb-6">
                         <h1 className="text-3xl font-bold text-gray-900 mb-4">All Products</h1>
+                        <SearchBar />
                     </div>
 
                     {/* Active Filters */}
@@ -76,16 +80,29 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
                     {/* Main Content - Products */}
                     <div className="flex-1">
+                        {/* Results Info */}
+                        {productsData.pagination && (
+                            <div className="mb-6">
+                                <p className="text-gray-600">
+                                    Showing {(productsData.pagination.currentPage - 1) * 12 + 1} to{' '}
+                                    {Math.min(productsData.pagination.currentPage * 12, productsData.pagination.totalProducts)} of{' '}
+                                    {productsData.pagination.totalProducts} products
+                                </p>
+                            </div>
+                        )}
+
                         <ProductGrid products={productsData.products} />
 
                         {/* Pagination */}
                         {productsData.pagination && productsData.pagination.totalPages > 1 && (
-                            <div className="mt-8 flex justify-center">
-                                <div className="bg-white px-4 py-3 rounded-lg border border-gray-200">
-                                    <p className="text-sm text-gray-700">
-                                        Page {productsData.pagination.currentPage} of {productsData.pagination.totalPages}
-                                    </p>
-                                </div>
+                            <div className="mt-8">
+                                <Pagination
+                                    currentPage={productsData.pagination.currentPage}
+                                    totalPages={productsData.pagination.totalPages}
+                                    totalProducts={productsData.pagination.totalProducts}
+                                    hasNext={productsData.pagination.hasNext}
+                                    hasPrev={productsData.pagination.hasPrev}
+                                />
                             </div>
                         )}
                     </div>
