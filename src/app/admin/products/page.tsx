@@ -7,10 +7,12 @@ import { UserRole } from './../../types'
 import Link from 'next/link'
 import ProductRow from './../../components/ProductRow'
 import AdminProductsSearch from './../../components/AdminProductsSearch'
+import AdminProductsPagination from './../../components/AdminProductsPagination'
 
 interface AdminProductsPageProps {
   searchParams: Promise<{
     search?: string
+    page?: string
   }>
 }
 
@@ -23,6 +25,11 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
   }
 
   const searchQuery = resolvedSearchParams.search || ''
+  const currentPage = parseInt(resolvedSearchParams.page || '1')
+  const pageSize = 20 // Products per page
+
+  // Calculate pagination
+  const skip = (currentPage - 1) * pageSize
 
   // Build where clause for search
   const where: any = {}
@@ -34,26 +41,34 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
     ]
   }
 
-  const products = await prisma.product.findMany({
-    where,
-    include: {
-      category: true,
-      reviews: {
-        select: {
-          rating: true
+  // Fetch products with pagination
+  const [products, totalCount] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      include: {
+        category: true,
+        reviews: {
+          select: {
+            rating: true
+          }
+        },
+        _count: {
+          select: {
+            orderItems: true,
+            reviews: true
+          }
         }
       },
-      _count: {
-        select: {
-          orderItems: true,
-          reviews: true
-        }
-      }
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  })
+      orderBy: {
+        createdAt: 'desc'
+      },
+      skip,
+      take: pageSize,
+    }),
+    prisma.product.count({ where })
+  ])
+
+  const totalPages = Math.ceil(totalCount / pageSize)
 
   return (
     <div>
@@ -75,33 +90,29 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
         <AdminProductsSearch initialSearch={searchQuery} />
       </div>
 
-      {/* Search Results Info */}
-      {searchQuery && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-blue-700">
-                Showing {products.length} products matching "<strong>{searchQuery}</strong>"
-              </p>
-              <p className="text-blue-600 text-sm mt-1">
-                Search includes: Product Name and Product ID
-              </p>
-            </div>
-            <Link
-              href="/admin/products"
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-            >
-              Clear Search
-            </Link>
-          </div>
+      {/* Results Summary */}
+      <div className="mb-6 flex justify-between items-center">
+        <div className="text-sm text-gray-600">
+          Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} products
+          {searchQuery && (
+            <span className="ml-2">
+              matching "<strong>{searchQuery}</strong>"
+            </span>
+          )}
         </div>
-      )}
+
+        {/* Quick Stats */}
+        <div className="flex space-x-4 text-sm text-gray-500">
+          <span>Total: {totalCount}</span>
+          <span>Page: {currentPage} of {totalPages}</span>
+        </div>
+      </div>
 
       {/* Products Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">
-            All Products ({products.length})
+            Products ({totalCount})
           </h2>
         </div>
 
@@ -164,6 +175,16 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <AdminProductsPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalProducts={totalCount}
+          searchQuery={searchQuery}
+        />
+      )}
     </div>
   )
 }

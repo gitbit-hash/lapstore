@@ -17,7 +17,7 @@ export default function AdminProductsSearch({ initialSearch = '' }: AdminProduct
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
 
-    const params = new URLSearchParams(searchParams?.toString() || '')
+    const params = new URLSearchParams()
 
     if (searchQuery.trim()) {
       params.set('search', searchQuery.trim())
@@ -25,13 +25,18 @@ export default function AdminProductsSearch({ initialSearch = '' }: AdminProduct
       params.delete('search')
     }
 
+    // Remove page parameter when searching to go back to page 1
+    params.delete('page')
+
     router.push(`/admin/products?${params.toString()}`)
   }
 
   const clearSearch = () => {
     setSearchQuery('')
-    const params = new URLSearchParams(searchParams?.toString() || '')
+    const params = new URLSearchParams()
+    // Remove both search and page parameters when clearing
     params.delete('search')
+    params.delete('page')
     router.push(`/admin/products?${params.toString()}`)
   }
 
@@ -83,6 +88,7 @@ export default function AdminProductsSearch({ initialSearch = '' }: AdminProduct
       {/* Search Tips */}
       <div className="mt-3 text-sm text-gray-500">
         <p>💡 Search tips: Use product name or product ID (full or partial)</p>
+        <p className="mt-1">🔍 Search results will automatically reset to page 1</p>
       </div>
     </div>
   )

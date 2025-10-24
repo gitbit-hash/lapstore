@@ -1,84 +1,66 @@
 // app/api/products/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/app/lib/prisma'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/lib/auth'
+import { UserRole } from '@/app/types'
 
 export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url)
-    const category = searchParams.get('category')
-    const search = searchParams.get('search')
-    const sort = searchParams.get('sort')
-    const page = searchParams.get('page') || '1'
-
-    const pageNumber = parseInt(page)
-    const pageSize = 12
-    const skip = (pageNumber - 1) * pageSize
-
-    // Build where clause
-    const where: any = {
-        isActive: true,
-    }
-
-    if (category) {
-        where.category = {
-            slug: category
-        }
-    }
-
-    if (search) {
-        where.OR = [
-            { name: { contains: search, mode: 'insensitive' } },
-            { description: { contains: search, mode: 'insensitive' } }
-        ]
-    }
-
-    // Build orderBy clause
-    let orderBy: any = { createdAt: 'desc' }
-
-    if (sort === 'price-asc') orderBy = { price: 'asc' }
-    if (sort === 'price-desc') orderBy = { price: 'desc' }
-    if (sort === 'name') orderBy = { name: 'asc' }
-
     try {
-        const [products, totalCount] = await Promise.all([
+        const session = await getServerSession(authOptions)
+
+        if (!session || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.SUPER_ADMIN)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        const { searchParams } = new URL(request.url)
+        const page = parseInt(searchParams.get('page') || '1')
+        const limit = parseInt(searchParams.get('limit') || '20') // Increased limit for admin
+        const search = searchParams.get('search') || ''
+
+        const skip = (page - 1) * limit
+
+        const where: any = {}
+
+        if (search) {
+            where.OR = [
+                { name: { contains: search, mode: 'insensitive' as const } },
+                { id: { contains: search, mode: 'insensitive' as const } }
+            ]
+        }
+
+        const [products, total] = await Promise.all([
             prisma.product.findMany({
                 where,
                 include: {
                     category: true,
-                    reviews: {
+                    _count: {
                         select: {
-                            rating: true
+                            orderItems: true,
+                            reviews: true
                         }
                     }
                 },
-                orderBy,
+                orderBy: {
+                    createdAt: 'desc'
+                },
                 skip,
-                take: pageSize,
+                take: limit
             }),
             prisma.product.count({ where })
         ])
 
-        // Calculate average rating for each product
-        const productsWithRating = products.map(product => ({
-            ...product,
-            averageRating: product.reviews.length > 0
-                ? product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length
-                : 0,
-            reviewCount: product.reviews.length
-        }))
-
         return NextResponse.json({
-            products: productsWithRating,
+            products,
             pagination: {
-                currentPage: pageNumber,
-                totalPages: Math.ceil(totalCount / pageSize),
-                totalProducts: totalCount,
-                hasNext: pageNumber < Math.ceil(totalCount / pageSize),
-                hasPrev: pageNumber > 1
+                page,
+                limit,
+                total,
+                pages: Math.ceil(total / limit)
             }
         })
-
     } catch (error) {
-        console.error('Products API error:', error)
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500 })
+        console.error('Error fetching products:', error)
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }
