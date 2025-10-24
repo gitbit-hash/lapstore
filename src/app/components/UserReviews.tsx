@@ -1,4 +1,4 @@
-// src/app/components/UserReviews.tsx - Updated to handle missing product id
+// src/app/components/UserReviews.tsx
 import Link from 'next/link'
 import { StarIcon } from '@heroicons/react/24/solid'
 import { StarIcon as StarOutline } from '@heroicons/react/24/outline'

@@ -1,3 +1,4 @@
+// src/app/Loading.tsx
 import { ProductGridSkeleton } from './components/ProductGrid'
 
 export default function Loading() {

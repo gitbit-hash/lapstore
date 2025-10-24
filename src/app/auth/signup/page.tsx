@@ -1,4 +1,4 @@
-// src/app/auth/signup/page.tsx - Updated with required phone
+// src/app/auth/signup/page.tsx 
 'use client'
 
 import { useState } from 'react'

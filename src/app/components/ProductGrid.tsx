@@ -1,3 +1,4 @@
+// src/app/components/ProductGridSkeleton.tsx
 import ProductCard from './ProductCard'
 import { Product } from '../types'
 import Loading from '../loading'

@@ -1,4 +1,4 @@
-// src/app/profile/page.tsx - Updated for all admins
+// src/app/profile/page.tsx
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../lib/auth'
 import { redirect } from 'next/navigation'

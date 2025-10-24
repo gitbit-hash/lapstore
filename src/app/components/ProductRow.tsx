@@ -1,3 +1,4 @@
+// src/app/components/ProductRow.tsx
 'use client'
 
 import Link from 'next/link'
@@ -89,8 +90,8 @@ export default function ProductRow({ product }: ProductRowProps) {
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.isActive
-            ? 'bg-green-100 text-green-800'
-            : 'bg-gray-100 text-gray-800'
+          ? 'bg-green-100 text-green-800'
+          : 'bg-gray-100 text-gray-800'
           }`}>
           {product.isActive ? 'Active' : 'Inactive'}
         </span>

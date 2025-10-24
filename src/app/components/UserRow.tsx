@@ -1,4 +1,4 @@
-// src/app/components/UserRow.tsx - Updated interface
+// src/app/components/UserRow.tsx
 'use client'
 
 import { useState } from 'react'

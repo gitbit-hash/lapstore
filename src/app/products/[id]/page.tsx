@@ -1,4 +1,4 @@
-// src/app/products/[id]/page.tsx - Updated with awaited params
+// src/app/products/[id]/page.tsx
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'

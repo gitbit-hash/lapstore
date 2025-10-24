@@ -1,4 +1,4 @@
-// src/app/components/ProductCard.tsx - Update the Add to Cart button
+// src/app/components/ProductCard.tsx
 'use client'
 
 import { useState } from 'react'

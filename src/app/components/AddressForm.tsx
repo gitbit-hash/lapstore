@@ -1,4 +1,4 @@
-// src/app/components/AddressForm.tsx - Updated without name field
+// src/app/components/AddressForm.tsx
 'use client'
 
 import { useState, useEffect } from 'react'

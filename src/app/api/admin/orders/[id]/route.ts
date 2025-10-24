@@ -1,3 +1,4 @@
+// src/app/api/admin/orders/[id]/route.ts - Fixed without name field
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../lib/auth'

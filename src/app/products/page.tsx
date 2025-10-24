@@ -1,3 +1,4 @@
+// src/app/products/page.tsx
 import ProductGrid from '../components/ProductGrid'
 import ProductFilters from '../components/ProductFilters'
 import SearchBar from '../components/SearchBar'

@@ -1,3 +1,4 @@
+// src/app/admin/orders/[id]/page
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/auth'
 import { redirect } from 'next/navigation'
@@ -204,10 +205,10 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               <div className="flex justify-between">
                 <span className="text-gray-600">Status</span>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
-                    order.status === 'SHIPPED' ? 'bg-blue-100 text-blue-800' :
-                      order.status === 'PROCESSING' ? 'bg-yellow-100 text-yellow-800' :
-                        order.status === 'PENDING' ? 'bg-gray-100 text-gray-800' :
-                          'bg-red-100 text-red-800'
+                  order.status === 'SHIPPED' ? 'bg-blue-100 text-blue-800' :
+                    order.status === 'PROCESSING' ? 'bg-yellow-100 text-yellow-800' :
+                      order.status === 'PENDING' ? 'bg-gray-100 text-gray-800' :
+                        'bg-red-100 text-red-800'
                   }`}>
                   {order.status}
                 </span>

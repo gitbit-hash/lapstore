@@ -1,3 +1,4 @@
+// src/app/utils/calculations.ts
 export function calculateAverageRating(reviews: { rating: number }[]): number {
   if (reviews.length === 0) return 0
   const total = reviews.reduce((sum, review) => sum + review.rating, 0)

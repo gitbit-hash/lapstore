@@ -1,4 +1,4 @@
-// src/app/stores/cartStore.ts - Update to export CartItem
+// src/app/stores/cartStore.ts
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { CartProduct } from '../types'

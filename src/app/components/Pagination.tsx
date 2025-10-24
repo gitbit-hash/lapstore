@@ -1,3 +1,4 @@
+// src/app/components/Pagination.tsx
 'use client'
 
 import Link from 'next/link'
@@ -100,8 +101,8 @@ export default function Pagination({
         <Link
           href={createPageURL(currentPage - 1)}
           className={`flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium ${!hasPrev
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900'
             }`}
           aria-disabled={!hasPrev}
           tabIndex={!hasPrev ? -1 : undefined}
@@ -120,8 +121,8 @@ export default function Pagination({
                 <Link
                   href={createPageURL(page as number)}
                   className={`px-3 py-2 border text-sm font-medium rounded-md ${currentPage === page
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                     }`}
                 >
                   {page}
@@ -140,8 +141,8 @@ export default function Pagination({
         <Link
           href={createPageURL(currentPage + 1)}
           className={`flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium ${!hasNext
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900'
             }`}
           aria-disabled={!hasNext}
           tabIndex={!hasNext ? -1 : undefined}

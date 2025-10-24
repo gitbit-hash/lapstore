@@ -1,3 +1,4 @@
+// src/app/components/Header.tsx
 'use client'
 
 import { ShoppingCartIcon, UserCircleIcon, PhoneIcon } from '@heroicons/react/24/outline'

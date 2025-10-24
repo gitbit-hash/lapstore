@@ -1,4 +1,4 @@
-// src/app/checkout/page.tsx - Updated for guest checkout
+// src/app/checkout/page.tsx
 'use client'
 
 import { useEffect, useState } from 'react'

@@ -1,4 +1,4 @@
-// src/app/components/UserAddresses.tsx - Updated with edit/delete functionality
+// src/app/components/UserAddresses.tsx
 'use client'
 
 import { useState } from 'react'

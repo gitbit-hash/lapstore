@@ -1,4 +1,4 @@
-// src/app/components/UserProfile.tsx - Extra safe version
+// src/app/components/UserProfile.tsx
 import { Address } from '../types'
 
 interface UserProfileProps {
