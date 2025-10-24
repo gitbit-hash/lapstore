@@ -1,7 +1,6 @@
 // src/app/products/page.tsx
 import ProductGrid from '../components/ProductGrid'
 import ProductFilters from '../components/ProductFilters'
-import SearchBar from '../components/SearchBar'
 import Pagination from '../components/Pagination'
 import { getProducts } from '../actions/products'
 import { getCategories } from '../actions/categories'
@@ -54,11 +53,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         <main>
             {/* Header */}
             <div className="bg-white border-b">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="flex flex-col items-center mb-6">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-4">All Products</h1>
-                        <SearchBar />
-                    </div>
+                <div className="container mx-auto px-4 py-4">
 
                     {/* Active Filters */}
                     {activeFilterCount > 0 && (

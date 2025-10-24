@@ -66,6 +66,9 @@ export default function ProductRow({ product }: ProductRowProps) {
           </div>
           <div className="ml-4">
             <div className="text-sm font-medium text-gray-900">{product.name}</div>
+            <div className="text-xs text-gray-500 font-mono">
+              ID: {product.id}
+            </div>
             <div className="text-sm text-gray-500">
               {product._count.orderItems} orders • {product.reviews.length} reviews
               {averageRating > 0 && ` • ⭐ ${averageRating.toFixed(1)}`}
