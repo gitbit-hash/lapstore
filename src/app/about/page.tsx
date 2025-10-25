@@ -7,11 +7,11 @@ export default function AboutPage() {
 
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-gray-900 mb-8">About TechHaven</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-8">About LapStore</h1>
 
           <div className="prose prose-lg">
             <p className="text-gray-600 mb-6">
-              Welcome to TechHaven, your premier destination for cutting-edge technology and computer products.
+              Welcome to LapStore, your premier destination for cutting-edge technology and computer products.
               We are passionate about providing the latest and most reliable tech solutions for both personal and professional use.
             </p>
 

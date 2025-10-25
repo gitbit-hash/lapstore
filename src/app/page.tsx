@@ -13,7 +13,7 @@ export default async function Home() {
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-2xl">
-            <h1 className="text-5xl font-bold mb-6">Tech Haven</h1>
+            <h1 className="text-5xl font-bold mb-6">LapStore</h1>
             <p className="text-xl mb-8 opacity-90">
               Discover the latest computers, high-performance components, and premium accessories.
               Everything you need for work, gaming, and creativity.
