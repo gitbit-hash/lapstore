@@ -125,6 +125,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
     return (
         <main>
+            <ProductStructuredData product={product} />
             {/* Breadcrumb */}
             <div className="bg-gray-50 border-b">
                 <div className="container mx-auto px-4 py-4">
@@ -325,24 +326,79 @@ export async function generateStaticParams() {
     }))
 }
 
-// Generate metadata for SEO
-export async function generateMetadata({ params }: ProductPageProps) {
+// Update the generateMetadata function
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
     const { id } = await params
     const product = await getProduct(id)
 
     if (!product) {
         return {
-            title: 'Product Not Found'
+            title: 'Product Not Found',
+            description: 'The product you are looking for does not exist.',
         }
     }
 
     return {
-        title: product.name,
-        description: product.description || `Buy ${product.name} at Tech Haven`,
+        title: `${product.name} | LapStore`,
+        description: product.description || `Buy ${product.name} at LapStore. ${product.category.name} with best prices and quality guarantee.`,
+        keywords: `${product.name}, ${product.category.name}, computers, electronics, tech`,
         openGraph: {
             title: product.name,
-            description: product.description || `Buy ${product.name} at Tech Haven`,
-            images: product.images,
+            description: product.description || `Buy ${product.name} at LapStore`,
+            images: product.images.length > 0 ? product.images : ['/images/og-image.jpg'],
+            type: 'product',
+            price: {
+                amount: product.price.toString(),
+                currency: 'USD',
+            },
+            availability: product.inventory > 0 ? 'in stock' : 'out of stock',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: product.name,
+            description: product.description || `Buy ${product.name} at LapStore`,
+            images: product.images.length > 0 ? [product.images[0]] : ['/images/og-image.jpg'],
+        },
+        alternates: {
+            canonical: `/products/${product.id}`,
         },
     }
+}
+
+function ProductStructuredData({ product }: { product: any }) {
+    const structuredData = {
+        '@context': 'https://schema.org/',
+        '@type': 'Product',
+        name: product.name,
+        image: product.images,
+        description: product.description,
+        sku: product.id,
+        brand: {
+            '@type': 'Brand',
+            name: 'LapStore'
+        },
+        offers: {
+            '@type': 'Offer',
+            url: `https://lapstore.com/products/${product.id}`,
+            priceCurrency: 'USD',
+            price: product.price,
+            availability: product.inventory > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            seller: {
+                '@type': 'Organization',
+                name: 'LapStore'
+            }
+        },
+        aggregateRating: product.reviewCount > 0 ? {
+            '@type': 'AggregateRating',
+            ratingValue: product.averageRating,
+            reviewCount: product.reviewCount
+        } : undefined
+    }
+
+    return (
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+    )
 }

@@ -97,7 +97,7 @@ export default function Header() {
                         {/* Logo */}
                         <Link href="/admin">
                             <h1 className="text-xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
-                                TechHaven Admin
+                                LapStore Admin
                             </h1>
                         </Link>
 
@@ -167,7 +167,7 @@ export default function Header() {
                     <div className="flex justify-center">
                         <Link href="/">
                             <h1 className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors duration-200">
-                                TechHaven
+                                LapStore
                             </h1>
                         </Link>
                     </div>
@@ -182,7 +182,7 @@ export default function Header() {
                         <div className="flex-shrink-0">
                             <Link href="/">
                                 <h1 className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors duration-200">
-                                    TechHaven
+                                    LapStore
                                 </h1>
                             </Link>
                         </div>
