@@ -4,6 +4,7 @@ import { authOptions } from './../lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from './../lib/prisma'
 import { UserRole } from './../types'
+import Link from 'next/link'
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions)
@@ -142,12 +143,12 @@ export default async function AdminDashboard() {
                       <p className="font-medium text-gray-900">{product.name}</p>
                       <p className="text-sm text-yellow-700">Only {product.inventory} left in stock</p>
                     </div>
-                    <a
+                    <Link
                       href={`/admin/products/edit/${product.id}`}
                       className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded text-sm hover:bg-yellow-200 transition-colors"
                     >
                       Restock
-                    </a>
+                    </Link>
                   </div>
                 ))}
               </div>
@@ -182,12 +183,12 @@ export default async function AdminDashboard() {
                   </span>
                 </div>
               </div>
-              <a
+              <Link
                 href="/admin/analytics"
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mt-4"
               >
                 View Full Analytics
-              </a>
+              </Link>
             </div>
           </div>
         )}
@@ -199,20 +200,20 @@ export default async function AdminDashboard() {
               <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
             </div>
             <div className="p-6 space-y-3">
-              <a
+              <Link
                 href="/admin/products/new"
                 className="block w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <h3 className="font-medium text-gray-900">Add New Product</h3>
                 <p className="text-sm text-gray-600">Create a new product listing</p>
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/admin/orders"
                 className="block w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <h3 className="font-medium text-gray-900">Manage Orders</h3>
                 <p className="text-sm text-gray-600">View and update orders</p>
-              </a>
+              </Link>
             </div>
           </div>
         )}

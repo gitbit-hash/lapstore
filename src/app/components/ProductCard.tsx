@@ -14,7 +14,6 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-    const [imageError, setImageError] = useState(false)
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
     const [isAdding, setIsAdding] = useState(false)
     const { addItem } = useCartStore()
@@ -76,7 +75,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                                 width={400}
                                 height={300}
                                 className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                                onError={() => setImageError(true)}
                                 priority={currentImageIndex === 0}
                             />
 

@@ -1,13 +1,28 @@
 // src/app/components/RevenueChart.tsx
 'use client'
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts'
 
 interface RevenueChartProps {
   data: Array<{
     date: string
     revenue: number
   }>
+}
+
+// Define proper TypeScript interface for tooltip props
+interface CustomTooltipProps extends TooltipProps<number, string> {
+  active?: boolean
+  payload?: Array<{
+    value: number
+    dataKey: string
+    color: string
+    payload: {
+      date: string
+      revenue: number
+    }
+  }>
+  label?: string
 }
 
 export default function RevenueChart({ data }: RevenueChartProps) {
@@ -24,11 +39,11 @@ export default function RevenueChart({ data }: RevenueChartProps) {
     }).format(value)
   }
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 border border-gray-300 rounded shadow-sm">
-          <p className="text-gray-600">{formatDate(label)}</p>
+          <p className="text-gray-600">{formatDate(label || '')}</p>
           <p className="text-blue-600 font-semibold">
             {formatCurrency(payload[0].value)}
           </p>

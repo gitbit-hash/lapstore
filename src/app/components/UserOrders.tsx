@@ -1,29 +1,33 @@
-// src/app/components/UserOrders.tsx
 import Link from 'next/link'
-import { Order } from '../types'
+import Image from 'next/image'
+
+// Define the actual order structure we're using
+interface OrderItem {
+  id: string
+  quantity: number
+  price: number
+  product: {
+    name: string
+    images: string[]
+  }
+}
+
+interface Order {
+  id: string
+  total: number
+  status: string
+  paymentMethod?: string
+  createdAt: Date
+  updatedAt: Date
+  orderItems: OrderItem[]
+}
 
 interface UserOrdersProps {
   user: {
     id: string
     name: string | null
     email: string
-    orders: Array<{
-      id: string
-      total: number
-      status: string
-      paymentMethod?: string
-      createdAt: Date
-      updatedAt: Date
-      orderItems: Array<{
-        id: string
-        quantity: number
-        price: number
-        product: {
-          name: string
-          images: string[]
-        }
-      }>
-    }>
+    orders: Order[]
   }
 }
 
@@ -37,7 +41,7 @@ export default function UserOrders({ user }: UserOrdersProps) {
           </svg>
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">No Orders Yet</h3>
-        <p className="text-gray-500">This user hasn't placed any orders.</p>
+        <p className="text-gray-500">This user hasn&apos;t placed any orders.</p>
       </div>
     )
   }
@@ -83,13 +87,15 @@ export default function UserOrders({ user }: UserOrdersProps) {
 
             {/* Order Items */}
             <div className="space-y-2">
-              {order.orderItems.slice(0, 3).map((item: any) => (
+              {order.orderItems.slice(0, 3).map((item: OrderItem) => (
                 <div key={item.id} className="flex items-center space-x-3 text-sm">
-                  <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
-                    <img
+                  <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center relative">
+                    <Image
                       src={item.product.images[0] || '/images/placeholder.jpg'}
                       alt={item.product.name}
-                      className="w-6 h-6 object-cover rounded"
+                      fill
+                      className="object-cover rounded"
+                      sizes="32px"
                     />
                   </div>
                   <div className="flex-1">

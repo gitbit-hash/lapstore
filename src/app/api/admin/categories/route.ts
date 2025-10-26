@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/auth'
 import { prisma } from '@/app/lib/prisma'
 import { UserRole } from '@/app/types'
+import { Prisma } from '@prisma/client'
 
 // GET all categories for admin
 export async function GET(request: NextRequest) {
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search') || ''
 
-    const where: any = {}
+    const where: Prisma.CategoryWhereInput = {}
 
     if (search) {
       where.OR = [

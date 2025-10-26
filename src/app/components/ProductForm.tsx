@@ -4,14 +4,54 @@
 import { useState, useEffect } from 'react'
 import { Category } from '../types'
 
+// Define proper TypeScript interfaces
+interface ProductSpecifications {
+  processor: string
+  memory: string
+  storage: string
+  display: string
+  graphics: string
+  os: string
+  battery: string
+  weight: string
+  ports: string
+  connectivity: string
+  [key: string]: string // Allow additional custom specifications
+}
+
+interface ProductFormData {
+  name: string
+  description: string
+  price: string
+  inventory: number
+  categoryId: string
+  images: string[]
+  specifications: ProductSpecifications
+  isActive: boolean
+}
+
+interface ProductSubmitData {
+  name: string
+  description: string
+  price: number
+  inventory: number
+  categoryId: string
+  images: string[]
+  specifications: ProductSpecifications
+  isActive: boolean
+}
+
+export type { ProductSubmitData };
+export type { ProductSpecifications };
+
 interface ProductFormProps {
-  onSubmit: (data: any) => void
+  onSubmit: (data: ProductSubmitData) => void
   isLoading?: boolean
-  initialData?: any
+  initialData?: ProductSubmitData
 }
 
 // Default empty specifications
-const defaultSpecifications = {
+const defaultSpecifications: ProductSpecifications = {
   processor: '',
   memory: '',
   storage: '',
@@ -26,31 +66,27 @@ const defaultSpecifications = {
 
 export default function ProductForm({ onSubmit, isLoading = false, initialData }: ProductFormProps) {
   const [categories, setCategories] = useState<Category[]>([])
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ProductFormData>({
     name: initialData?.name || '',
     description: initialData?.description || '',
-    price: initialData?.price || '',
+    price: initialData?.price.toString() || '',
     inventory: initialData?.inventory || 0,
     categoryId: initialData?.categoryId || '',
     images: initialData?.images || [''],
     specifications: initialData?.specifications || defaultSpecifications,
     isActive: initialData?.isActive ?? true
   })
-  const [isLoadingCategories, setIsLoadingCategories] = useState(false)
   const [newSpecKey, setNewSpecKey] = useState('')
   const [newSpecValue, setNewSpecValue] = useState('')
 
   useEffect(() => {
     const fetchCategories = async () => {
-      setIsLoadingCategories(true)
       try {
         const response = await fetch('/api/categories')
         const data = await response.json()
         setCategories(data)
       } catch (error) {
         console.error('Error fetching categories:', error)
-      } finally {
-        setIsLoadingCategories(false)
       }
     }
 
@@ -60,7 +96,7 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    const submitData = {
+    const submitData: ProductSubmitData = {
       ...formData,
       price: parseFloat(formData.price),
       inventory: parseInt(formData.inventory.toString()),
@@ -253,7 +289,7 @@ export default function ProductForm({ onSubmit, isLoading = false, initialData }
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Specifications</h2>
 
-        {initialData?.specifications && (
+        {initialData?.name && (
           <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
             <p className="text-sm text-blue-700">
               Editing specifications for: <strong>{initialData.name}</strong>

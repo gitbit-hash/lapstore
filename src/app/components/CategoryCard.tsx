@@ -1,10 +1,8 @@
 // src/app/components/CategoryCard.tsx
 import Link from 'next/link'
-import Image from 'next/image'
 
 interface CategoryCardProps {
   title: string
-  image: string
   href: string
   description?: string
   productCount?: number
@@ -12,7 +10,6 @@ interface CategoryCardProps {
 
 export default function CategoryCard({
   title,
-  image,
   href,
   description,
   productCount
@@ -38,20 +35,6 @@ export default function CategoryCard({
               </div>
             )}
           </div>
-
-          {/* You can also use actual images if you have them:
-          <Image
-            src={image}
-            alt={title}
-            width={400}
-            height={300}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={(e) => {
-              // Fallback to gradient background if image fails
-              e.currentTarget.style.display = 'none'
-            }}
-          />
-          */}
         </div>
 
         {/* Category Info */}

@@ -1,7 +1,20 @@
-// src/app/components/UserProfile.tsx
-import { Address } from '../types'
+import Image from 'next/image'
+import { Address, Order } from '../types'
 
-// Update your UserProfileProps and other interfaces to make properties optional
+// Define the actual review structure we're using
+interface UserReview {
+  id: string
+  rating: number
+  comment: string | null
+  createdAt: Date
+  updatedAt: Date
+  product: {
+    name: string
+    images: string[]
+    id?: string
+  }
+}
+
 interface UserProfileProps {
   user: {
     id: string
@@ -13,10 +26,9 @@ interface UserProfileProps {
     createdAt: Date
     updatedAt: Date
     phone?: string | null
-    // Make other properties optional
     addresses?: Address[]
-    orders?: any[]
-    reviews?: any[]
+    orders?: Order[]
+    reviews?: UserReview[] // Use the actual structure, not the Review type
     _count?: {
       orders: number
       reviews: number
@@ -125,11 +137,13 @@ export default function UserProfile({ user }: UserProfileProps) {
       {user.image && (
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Image</h3>
-          <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-200">
-            <img
+          <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-200 relative">
+            <Image
               src={user.image}
               alt={user.name || 'User profile'}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              sizes="96px"
             />
           </div>
         </div>

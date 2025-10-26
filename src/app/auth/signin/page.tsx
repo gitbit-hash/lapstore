@@ -36,6 +36,7 @@ export default function SignIn() {
                 router.refresh()
             }
         } catch (error) {
+            console.error('Sign in error:', error)
             setError('An error occurred. Please try again.')
         } finally {
             setIsLoading(false)
@@ -47,6 +48,7 @@ export default function SignIn() {
         try {
             await signIn('google', { callbackUrl: '/' })
         } catch (error) {
+            console.error('Google sign in error:', error)
             setError('Failed to sign in with Google')
         } finally {
             setIsLoading(false)

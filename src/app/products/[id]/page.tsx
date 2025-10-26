@@ -1,4 +1,3 @@
-// src/app/products/[id]/page.tsx
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -7,8 +6,9 @@ import { StarIcon as StarOutline } from '@heroicons/react/24/outline'
 import { prisma } from '@/app/lib/prisma'
 import ProductGrid from '@/app/components/ProductGrid'
 import AddToCartButton from '../../components/AddToCartButton'
-import { ProductDetail, CartProduct, Product, Category, Review } from '../../types'
+import { ProductDetail, CartProduct, Product } from '../../types'
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 
 interface ProductPageProps {
     params: Promise<{
@@ -16,8 +16,7 @@ interface ProductPageProps {
     }>
 }
 
-type ProductWithRelations = Product & Category & Review[]
-
+// Use the existing Product type directly instead of creating a new one
 async function getProduct(id: string) {
     try {
         const product = await prisma.product.findUnique({
@@ -42,13 +41,19 @@ async function getProduct(id: string) {
 
         if (!product) return null
 
-        // Calculate average rating with proper typing
+        // Convert specifications from JsonValue to the expected type
+        const specifications = product.specifications ?
+            product.specifications as Record<string, string | number | boolean> :
+            null
+
+        // Calculate average rating
         const averageRating = product.reviews.length > 0
             ? product.reviews.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) / product.reviews.length
             : 0
 
         const productDetail: ProductDetail = {
             ...product,
+            specifications, // Use the converted specifications
             averageRating,
             reviewCount: product.reviews.length
         }
@@ -60,7 +65,7 @@ async function getProduct(id: string) {
     }
 }
 
-async function getRelatedProducts(categoryId: string, currentProductId: string) {
+async function getRelatedProducts(categoryId: string, currentProductId: string): Promise<Product[]> {
     try {
         const products = await prisma.product.findMany({
             where: {
@@ -80,13 +85,29 @@ async function getRelatedProducts(categoryId: string, currentProductId: string) 
         })
 
         // Calculate average ratings with proper typing
-        const productsWithRatings = products.map((product: any) => ({
-            ...product,
-            averageRating: product.reviews.length > 0
-                ? product.reviews.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) / product.reviews.length
-                : 0,
-            reviewCount: product.reviews.length
-        }))
+        const productsWithRatings: Product[] = products.map((product) => {
+            const specifications = product.specifications ?
+                product.specifications as Record<string, string | number | boolean> :
+                null
+
+            return {
+                id: product.id,
+                name: product.name,
+                description: product.description, // This is string | null, matching Product type
+                price: product.price,
+                images: product.images,
+                category: product.category,
+                averageRating: product.reviews.length > 0
+                    ? product.reviews.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) / product.reviews.length
+                    : 0,
+                reviewCount: product.reviews.length,
+                inventory: product.inventory,
+                specifications,
+                isActive: product.isActive,
+                createdAt: product.createdAt,
+                updatedAt: product.updatedAt
+            }
+        })
 
         return productsWithRatings
     } catch (error) {
@@ -95,15 +116,42 @@ async function getRelatedProducts(categoryId: string, currentProductId: string) 
     }
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
-    // Await the params promise
-    const { id } = await params
-    const product = await getProduct(id)
+// Loading component for Suspense fallback
+function ProductLoading() {
+    return (
+        <div className="container mx-auto px-4 py-8">
+            <div className="animate-pulse">
+                {/* Breadcrumb skeleton */}
+                <div className="bg-gray-200 h-4 w-48 mb-4 rounded"></div>
 
-    if (!product) {
-        notFound()
-    }
+                {/* Product details skeleton */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    {/* Image skeleton */}
+                    <div>
+                        <div className="bg-gray-200 h-96 rounded-lg mb-4"></div>
+                        <div className="grid grid-cols-4 gap-2">
+                            {[...Array(4)].map((_, i) => (
+                                <div key={i} className="bg-gray-200 h-20 rounded"></div>
+                            ))}
+                        </div>
+                    </div>
 
+                    {/* Info skeleton */}
+                    <div className="space-y-4">
+                        <div className="bg-gray-200 h-8 w-3/4 rounded"></div>
+                        <div className="bg-gray-200 h-6 w-1/2 rounded"></div>
+                        <div className="bg-gray-200 h-12 w-1/3 rounded"></div>
+                        <div className="bg-gray-200 h-24 rounded"></div>
+                        <div className="bg-gray-200 h-12 w-full rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// Client component that uses useSearchParams
+function ProductContent({ product, relatedProducts }: { product: ProductDetail, relatedProducts: Product[] }) {
     // Create cart product for AddToCartButton
     const cartProduct: CartProduct = {
         id: product.id,
@@ -112,8 +160,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
         images: product.images,
         inventory: product.inventory
     }
-
-    const relatedProducts = await getRelatedProducts(product.category.id, product.id)
 
     return (
         <main>
@@ -306,6 +352,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
     )
 }
 
+export default async function ProductPage({ params }: ProductPageProps) {
+    // Await the params promise
+    const { id } = await params
+    const product = await getProduct(id)
+
+    if (!product) {
+        notFound()
+    }
+
+    const relatedProducts = await getRelatedProducts(product.category.id, product.id)
+
+    return (
+        <Suspense fallback={<ProductLoading />}>
+            <ProductContent product={product} relatedProducts={relatedProducts} />
+        </Suspense>
+    )
+}
+
 // Generate static params for better performance
 export async function generateStaticParams() {
     const products = await prisma.product.findMany({
@@ -313,7 +377,7 @@ export async function generateStaticParams() {
         select: { id: true }
     })
 
-    return products.map((product: any) => ({
+    return products.map((product) => ({
         id: product.id
     }))
 }
@@ -352,7 +416,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
 }
 
-function ProductStructuredData({ product }: { product: any }) {
+function ProductStructuredData({ product }: { product: ProductDetail }) {
     const structuredData = {
         '@context': 'https://schema.org/',
         '@type': 'Product',
@@ -367,7 +431,7 @@ function ProductStructuredData({ product }: { product: any }) {
         offers: {
             '@type': 'Offer',
             url: `https://lapstore.com/products/${product.id}`,
-            priceCurrency: 'USD',
+            priceCurrency: 'EGP',
             price: product.price,
             availability: product.inventory > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             seller: {

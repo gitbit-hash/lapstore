@@ -5,11 +5,17 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import CategoryForm from '@/app/components/CategoryForm'
 
+interface CategoryFormData {
+  name: string
+  slug: string
+  description?: string
+}
+
 export default function NewCategoryPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: CategoryFormData) => {
     setIsLoading(true)
 
     try {

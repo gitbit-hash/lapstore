@@ -8,6 +8,7 @@ import Link from 'next/link'
 import ProductRow from './../../components/ProductRow'
 import AdminProductsSearch from './../../components/AdminProductsSearch'
 import AdminProductsPagination from './../../components/AdminProductsPagination'
+import { Prisma } from '@prisma/client'
 
 interface AdminProductsPageProps {
   searchParams: Promise<{
@@ -31,8 +32,8 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
   // Calculate pagination
   const skip = (currentPage - 1) * pageSize
 
-  // Build where clause for search
-  const where: any = {}
+  // Build where clause for search with proper typing
+  const where: Prisma.ProductWhereInput = {}
 
   if (searchQuery) {
     where.OR = [
@@ -96,7 +97,7 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
           Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} products
           {searchQuery && (
             <span className="ml-2">
-              matching "<strong>{searchQuery}</strong>"
+              matching &quot;<strong>{searchQuery}</strong>&quot;
             </span>
           )}
         </div>
@@ -160,7 +161,7 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
             </h3>
             <p className="text-gray-500 mb-4">
               {searchQuery
-                ? 'Try adjusting your search criteria to find what you\'re looking for.'
+                ? 'Try adjusting your search criteria to find what you&apos;re looking for.'
                 : 'Get started by adding your first product.'
               }
             </p>

@@ -1,11 +1,12 @@
-// src/app/components/UserReviews.tsx
 import Link from 'next/link'
+import Image from 'next/image'
 import { StarIcon } from '@heroicons/react/24/solid'
 import { StarIcon as StarOutline } from '@heroicons/react/24/outline'
 
 interface UserReviewsProps {
   user: {
-    reviews: Array<{
+    // Make reviews optional and allow any user object structure
+    reviews?: Array<{
       id: string
       rating: number
       comment: string | null
@@ -14,7 +15,7 @@ interface UserReviewsProps {
       product: {
         name: string
         images: string[]
-        id?: string // Make id optional
+        id?: string
       }
     }>
   }
@@ -32,7 +33,7 @@ export default function UserReviews({ user }: UserReviewsProps) {
           </svg>
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">No Reviews Yet</h3>
-        <p className="text-gray-500">This user hasn't written any reviews.</p>
+        <p className="text-gray-500">This user hasn&apos;t written any reviews.</p>
       </div>
     )
   }
@@ -74,11 +75,13 @@ export default function UserReviews({ user }: UserReviewsProps) {
           <div key={review.id} className="border border-gray-200 rounded-lg p-4">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <img
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center relative">
+                  <Image
                     src={review.product.images[0] || '/images/placeholder.jpg'}
                     alt={review.product.name}
-                    className="w-8 h-8 object-cover rounded"
+                    fill
+                    className="object-cover rounded"
+                    sizes="40px"
                   />
                 </div>
                 <div>
@@ -121,9 +124,12 @@ export default function UserReviews({ user }: UserReviewsProps) {
 
             <div className="flex justify-end mt-3 space-x-2">
               {review.product.id && (
-                <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                <Link
+                  href={`/products/${review.product.id}`}
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
                   View Product
-                </button>
+                </Link>
               )}
               <button className="text-red-600 hover:text-red-700 text-sm font-medium">
                 Delete Review

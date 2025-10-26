@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
         console.log('👤 User session:', session.user.id)
 
-        const { items, shippingInfo, paymentMethod, total } = await request.json()
+        const { items, shippingInfo, paymentMethod } = await request.json()
         console.log('📦 Order items:', items)
         console.log('🏠 Shipping info:', shippingInfo)
 
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET all orders for the current user
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         const session = await getServerSession(authOptions)
 

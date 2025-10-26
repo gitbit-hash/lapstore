@@ -5,11 +5,22 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ProductForm from './../../../components/ProductForm'
 
+interface ProductFormData {
+  name: string
+  description?: string
+  price: number
+  inventory: number
+  categoryId: string
+  images: string[]
+  specifications?: Record<string, string | number | boolean>
+  isActive?: boolean
+}
+
 export default function NewProductPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: ProductFormData) => {
     setIsLoading(true)
 
     try {

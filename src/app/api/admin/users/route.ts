@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/auth'
 import { prisma } from '@/app/lib/prisma'
 import { UserRole } from '@/app/types'
+import { Prisma } from '@prisma/client'
 
 // GET all users with pagination and filtering
 export async function GET(request: NextRequest) {
@@ -22,8 +23,8 @@ export async function GET(request: NextRequest) {
     const role = searchParams.get('role') || ''
     const skip = (page - 1) * limit
 
-    // Build where clause
-    const where: any = {}
+    // Build where clause with proper typing
+    const where: Prisma.UserWhereInput = {}
 
     if (search) {
       where.OR = [
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (role && Object.values(UserRole).includes(role as UserRole)) {
-      where.role = role
+      where.role = role as UserRole
     }
 
     const [users, totalCount] = await Promise.all([

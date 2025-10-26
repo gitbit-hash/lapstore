@@ -3,6 +3,7 @@
 
 import { prisma } from '@/app/lib/prisma'
 import { Product, ProductFilters } from '../types'
+import { Prisma } from '@prisma/client'
 
 export async function getProducts(filters?: ProductFilters): Promise<{
     products: Product[]
@@ -20,7 +21,7 @@ export async function getProducts(filters?: ProductFilters): Promise<{
         const skip = (page - 1) * pageSize
 
         // Build where clause
-        const where: any = {
+        const where: Prisma.ProductWhereInput = {
             isActive: true,
         }
 
@@ -57,7 +58,7 @@ export async function getProducts(filters?: ProductFilters): Promise<{
         }
 
         // Build orderBy clause
-        let orderBy: any = { createdAt: 'desc' }
+        let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: 'desc' }
 
         switch (filters?.sort) {
             case 'price-asc':

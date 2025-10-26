@@ -9,16 +9,81 @@ import TopProductsList from './TopProductsList'
 import RecentActivity from './RecentActivity'
 import CategoryBreakdown from './CategoryBreakdown'
 
+// Define proper TypeScript interfaces that match the child component expectations
+interface DailyRevenueData {
+  date: string
+  revenue: number
+  orders: number
+}
+
+interface RevenueData {
+  total: number
+  growth: number
+  daily: DailyRevenueData[]
+}
+
+interface OrderStats {
+  total: number
+  completed: number
+  averageValue: number
+  conversionRate: number
+}
+
+interface UserStats {
+  total: number
+  new: number
+  returning: number
+}
+
+interface ProductStats {
+  active: number
+  outOfStock: number
+  lowStock: number
+}
+
+// Updated interfaces to match child component expectations
+interface CategoryStat {
+  id: string
+  name: string
+  productCount: number
+  totalValue: number
+}
+
+interface RecentOrder {
+  id: string
+  total: number
+  status: string
+  createdAt: Date
+  customer: {
+    name: string | null
+    email: string
+  }
+  orderItems: Array<{
+    product: {
+      name: string
+    }
+  }>
+}
+
+interface TopProduct {
+  productId: string
+  productName: string
+  category: string
+  image: string
+  quantitySold: number
+  revenue: number
+}
+
 interface AnalyticsDashboardProps {
   data: {
     period: string
-    revenueData: any
-    orderStats: any
-    userStats: any
-    productStats: any
-    categoryStats: any
-    recentOrders: any[]
-    topProducts: any[]
+    revenueData: RevenueData
+    orderStats: OrderStats
+    userStats: UserStats
+    productStats: ProductStats
+    categoryStats: CategoryStat[]
+    recentOrders: RecentOrder[]
+    topProducts: TopProduct[]
     dateRange: {
       startDate: Date
       endDate: Date

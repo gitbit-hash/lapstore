@@ -1,4 +1,4 @@
-// src/app/admin/orders/page
+// src/app/admin/orders/page.tsx
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/auth'
 import { redirect } from 'next/navigation'
@@ -7,6 +7,7 @@ import { UserRole } from '@/app/types'
 import Link from 'next/link'
 import OrderRow from '@/app/components/OrderRow'
 import SearchOrders from '@/app/components/SearchOrders'
+import { Prisma } from '@prisma/client'
 
 interface AdminOrdersPageProps {
   searchParams: Promise<{
@@ -26,8 +27,8 @@ export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageP
   const searchQuery = resolvedSearchParams.search || ''
   const statusFilter = resolvedSearchParams.filter || ''
 
-  // Build where clause for filtering
-  const where: any = {}
+  // Build where clause for filtering with proper typing
+  const where: Prisma.OrderWhereInput = {}
 
   // Search functionality - search by order ID or customer phone
   if (searchQuery) {
@@ -45,7 +46,7 @@ export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageP
 
   // Status filter
   if (statusFilter && statusFilter !== 'all') {
-    where.status = statusFilter
+    where.status = statusFilter as Prisma.EnumOrderStatusFilter
   }
 
   const orders = await prisma.order.findMany({
@@ -139,7 +140,7 @@ export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageP
           <div className="flex items-center justify-between">
             <div>
               <p className="text-blue-700">
-                Showing {orders.length} orders matching "<strong>{searchQuery}</strong>"
+                Showing {orders.length} orders matching &quot;<strong>{searchQuery}</strong>&quot;
               </p>
               <p className="text-blue-600 text-sm mt-1">
                 Search includes: Order ID, Customer Name, Email, and Phone Number
@@ -263,7 +264,7 @@ export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageP
             </h3>
             <p className="text-gray-500">
               {searchQuery
-                ? 'Try adjusting your search criteria to find what you\'re looking for.'
+                ? 'Try adjusting your search criteria to find what you&apos;re looking for.'
                 : 'Customer orders will appear here when they start shopping.'
               }
             </p>

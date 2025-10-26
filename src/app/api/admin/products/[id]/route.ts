@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/auth'
 import { prisma } from '@/app/lib/prisma'
 import { UserRole } from '@/app/types'
+import { Prisma } from '@prisma/client'
 
 // GET single product
 export async function GET(
@@ -72,18 +73,18 @@ export async function PUT(
     const filteredImages = data.images.filter((image: string) => image.trim() !== '')
 
     // Clean specifications - properly typed for Prisma JSON field
-    let cleanSpecifications: any = null
+    let cleanSpecifications: Prisma.InputJsonValue = null as unknown as Prisma.InputJsonValue
     if (data.specifications && Object.keys(data.specifications).length > 0) {
       // Remove empty values but keep the structure
       const filteredSpecs = Object.fromEntries(
-        Object.entries(data.specifications).filter(([_, value]) =>
+        Object.entries(data.specifications).filter(([, value]) =>
           value !== null && value !== undefined && value !== ''
         )
       )
 
       // Only set specifications if there are valid values
       if (Object.keys(filteredSpecs).length > 0) {
-        cleanSpecifications = filteredSpecs
+        cleanSpecifications = filteredSpecs as Prisma.InputJsonValue
       }
     }
 
@@ -96,7 +97,7 @@ export async function PUT(
         inventory: parseInt(data.inventory.toString()),
         categoryId: data.categoryId,
         images: filteredImages,
-        specifications: cleanSpecifications, // This can now be null or object
+        specifications: cleanSpecifications,
         isActive: data.isActive,
         updatedAt: new Date()
       },
@@ -111,6 +112,7 @@ export async function PUT(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
 // DELETE product (soft delete by setting isActive to false)
 export async function DELETE(
   request: NextRequest,

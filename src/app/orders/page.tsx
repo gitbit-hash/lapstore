@@ -4,6 +4,7 @@ import { authOptions } from '../lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '../lib/prisma'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface OrderItem {
     id: string
@@ -114,11 +115,13 @@ export default async function OrdersPage() {
                                 <div className="space-y-4">
                                     {order.orderItems.map((item: OrderItem) => (
                                         <div key={item.id} className="flex items-center space-x-3">
-                                            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                                                <img
+                                            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center relative">
+                                                <Image
                                                     src={item.product.images[0] || '/images/placeholder.jpg'}
                                                     alt={item.product.name}
-                                                    className="w-10 h-10 object-cover rounded"
+                                                    fill
+                                                    className="object-cover rounded"
+                                                    sizes="48px"
                                                 />
                                             </div>
                                             <div className="flex-1 min-w-0">

@@ -176,7 +176,7 @@ export default async function Profile() {
                     {isCustomer && (!user.orders || user.orders.length === 0) && (
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
                             <h2 className="text-xl font-semibold text-gray-900 mb-2">No Orders Yet</h2>
-                            <p className="text-gray-600 mb-4">You haven't placed any orders yet.</p>
+                            <p className="text-gray-600 mb-4">You haven&apos;t placed any orders yet.</p>
                             <Link
                                 href="/products"
                                 className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors inline-block"

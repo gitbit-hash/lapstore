@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../lib/auth'
 import { prisma } from '../../../lib/prisma'
 import { UserRole } from '../../../types'
+import { Prisma } from '@prisma/client'
 
 // GET all products for admin
 export async function GET(request: NextRequest) {
@@ -21,8 +22,8 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    // Fix: Use proper Prisma types for the where clause
-    const where: any = {}
+    // Use proper Prisma types for the where clause
+    const where: Prisma.ProductWhereInput = {}
 
     if (search) {
       where.OR = [

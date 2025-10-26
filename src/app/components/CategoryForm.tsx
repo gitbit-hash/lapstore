@@ -3,14 +3,25 @@
 
 import { useState, useEffect } from 'react'
 
+// Define proper TypeScript interfaces
+interface CategoryFormData {
+  name: string
+  slug: string
+}
+
+interface Category {
+  name: string
+  slug: string
+}
+
 interface CategoryFormProps {
-  onSubmit: (data: any) => void
+  onSubmit: (data: CategoryFormData) => void
   isLoading?: boolean
-  initialData?: any
+  initialData?: Category
 }
 
 export default function CategoryForm({ onSubmit, isLoading = false, initialData }: CategoryFormProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CategoryFormData>({
     name: initialData?.name || '',
     slug: initialData?.slug || '',
   })

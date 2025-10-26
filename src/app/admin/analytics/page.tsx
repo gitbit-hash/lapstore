@@ -89,7 +89,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
 
 // Helper functions to fetch analytics data
 async function getRevenueData(startDate: Date, endDate: Date) {
-  // Get daily revenue for the period
+  // Get daily revenue AND order counts for the period
   const dailyRevenue = await prisma.order.groupBy({
     by: ['createdAt'],
     where: {
@@ -104,17 +104,22 @@ async function getRevenueData(startDate: Date, endDate: Date) {
     _sum: {
       total: true
     },
+    _count: {
+      id: true // This counts the number of orders per day
+    },
     orderBy: {
       createdAt: 'asc'
     }
   })
 
-  // Format for chart
+  // Format for chart - include orders count
   const revenueByDay = dailyRevenue.map(day => ({
     date: day.createdAt.toISOString().split('T')[0],
-    revenue: day._sum.total || 0
+    revenue: day._sum.total || 0,
+    orders: day._count.id // Add the orders count
   }))
 
+  // ... rest of your existing code remains the same
   // Calculate total revenue
   const totalRevenue = revenueByDay.reduce((sum, day) => sum + day.revenue, 0)
 

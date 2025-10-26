@@ -11,6 +11,16 @@ interface UserAddressesProps {
   }
 }
 
+// Define the form data structure for address submission
+interface AddressFormData {
+  street: string
+  city: string
+  state: string
+  postalCode: string
+  country: string
+  isDefault: boolean
+}
+
 export default function UserAddresses({ user }: UserAddressesProps) {
   const [editingAddress, setEditingAddress] = useState<Address | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -43,7 +53,7 @@ export default function UserAddresses({ user }: UserAddressesProps) {
     }
   }
 
-  const handleFormSubmit = async (formData: any) => {
+  const handleFormSubmit = async (formData: AddressFormData) => {
     try {
       const url = editingAddress
         ? `/api/admin/addresses/${editingAddress.id}`
@@ -97,7 +107,7 @@ export default function UserAddresses({ user }: UserAddressesProps) {
           </svg>
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">No Addresses Saved</h3>
-        <p className="text-gray-500 mb-6">This user hasn't saved any addresses yet.</p>
+        <p className="text-gray-500 mb-6">This user hasn&apos;t saved any addresses yet.</p>
         <button
           onClick={() => setIsFormOpen(true)}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"

@@ -3,7 +3,7 @@ import { withAuth } from 'next-auth/middleware'
 import { UserRole } from './app/types'
 
 export default withAuth(
-  function middleware(req) {
+  function middleware() {
     // Additional middleware logic can go here
   },
   {

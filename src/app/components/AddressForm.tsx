@@ -4,14 +4,23 @@
 import { useState, useEffect } from 'react'
 import { Address } from '../types'
 
+interface AddressFormData {
+  street: string
+  city: string
+  state: string
+  postalCode: string
+  country: string
+  isDefault: boolean
+}
+
 interface AddressFormProps {
   address?: Address
-  onSubmit: (data: any) => void
+  onSubmit: (data: AddressFormData) => void
   onCancel: () => void
 }
 
 export default function AddressForm({ address, onSubmit, onCancel }: AddressFormProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<AddressFormData>({
     street: '',
     city: '',
     state: '',

@@ -14,13 +14,12 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EGP'
     }).format(amount)
   }
 
-  // Calculate total products and value for percentage calculations
+  // Calculate total products for percentage calculations
   const totalProducts = categories.reduce((sum, cat) => sum + cat.productCount, 0)
-  const totalValue = categories.reduce((sum, cat) => sum + cat.totalValue, 0)
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -28,7 +27,6 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
       <div className="space-y-4">
         {categories.slice(0, 8).map((category) => {
           const productPercentage = totalProducts > 0 ? (category.productCount / totalProducts) * 100 : 0
-          const valuePercentage = totalValue > 0 ? (category.totalValue / totalValue) * 100 : 0
 
           return (
             <div key={category.id} className="space-y-2">
@@ -72,4 +70,4 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
       </div>
     </div>
   )
-} 
+}

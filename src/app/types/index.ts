@@ -1,6 +1,6 @@
 // src/app/types/index.ts
 import { DefaultSession } from 'next-auth'
-import { User } from '@prisma/client'
+import { User, Prisma } from '@prisma/client'
 
 declare module 'next-auth' {
     interface Session {
@@ -42,7 +42,7 @@ export interface Product {
     averageRating: number
     reviewCount: number
     inventory: number
-    specifications?: any
+    specifications?: Prisma.JsonValue | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -64,13 +64,6 @@ export interface Review {
         name: string | null
         image: string | null
     }
-}
-
-interface ProductWithReviews extends Product {
-    reviews: Array<{
-        rating: number
-        // other review fields you're selecting
-    }>
 }
 
 export interface Category {
@@ -125,7 +118,7 @@ export interface UserWithOrders {
     role: string
     createdAt: Date
     updatedAt: Date
-    addresses: any[] // We can define Address type later if needed
+    addresses: Address[] // We can define Address type later if needed
     orders: Order[]
 }
 

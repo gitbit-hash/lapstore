@@ -6,6 +6,7 @@ import { prisma } from '@/app/lib/prisma'
 import { UserRole } from '@/app/types'
 import Link from 'next/link'
 import CategoriesTable from '@/app/components/CategoriesTable'
+import { Prisma } from '@prisma/client'
 
 interface AdminCategoriesPageProps {
   searchParams: Promise<{
@@ -23,8 +24,8 @@ export default async function AdminCategoriesPage({ searchParams }: AdminCategor
 
   const searchQuery = resolvedSearchParams.search || ''
 
-  // Build where clause for search
-  const where: any = {}
+  // Build where clause for search with proper typing
+  const where: Prisma.CategoryWhereInput = {}
 
   if (searchQuery) {
     where.OR = [

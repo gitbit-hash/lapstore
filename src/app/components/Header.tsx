@@ -12,6 +12,7 @@ import {
     UserIcon
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useCartStore } from '../stores/cartStore'
 import { useSession, signOut } from 'next-auth/react'
 import { useState, useEffect } from 'react'
@@ -20,7 +21,7 @@ import SearchBar from './SearchBar'
 import { usePathname } from 'next/navigation'
 
 export default function Header() {
-    const { toggleCart, getTotalItems } = useCartStore()
+    const { getTotalItems } = useCartStore()
     const { data: session, status } = useSession()
     const [showUserMenu, setShowUserMenu] = useState(false)
     const [showMobileMenu, setShowMobileMenu] = useState(false)
@@ -217,11 +218,14 @@ export default function Header() {
                                         className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
                                     >
                                         {session.user?.image ? (
-                                            <img
-                                                src={session.user.image}
-                                                alt={session.user.name || 'User'}
-                                                className="w-8 h-8 rounded-full transition-transform duration-200 hover:scale-105"
-                                            />
+                                            <div className="w-8 h-8 relative rounded-full overflow-hidden">
+                                                <Image
+                                                    src={session.user.image}
+                                                    alt={session.user.name || 'User'}
+                                                    fill
+                                                    className="object-cover transition-transform duration-200 hover:scale-105"
+                                                />
+                                            </div>
                                         ) : (
                                             <UserCircleIcon className="w-8 h-8 text-gray-400 transition-colors duration-200" />
                                         )}

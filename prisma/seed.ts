@@ -12,7 +12,7 @@ async function main() {
     await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE`;
 
     // Create Categories
-    const categories = await prisma.category.createMany({
+    await prisma.category.createMany({
         data: [
             // Laptops
             { name: 'Gaming Laptops', slug: 'gaming-laptops' },
@@ -62,7 +62,7 @@ async function main() {
     const membraneKeyboards = await prisma.category.findFirst({ where: { slug: 'membrane-keyboards' } });
 
     // Create Products (3 per category)
-    const products = await prisma.product.createMany({
+    await prisma.product.createMany({
         data: [
             // ========== GAMING LAPTOPS (3 products) ==========
             {
@@ -1421,7 +1421,7 @@ async function main() {
     });
 
     // Create an admin user
-    const adminUser = await prisma.user.upsert({
+    await prisma.user.upsert({
         where: { email: 'admin@computershop.com' },
         update: {},
         create: {

@@ -1,13 +1,28 @@
-// src/app/components/UserDetailTabs.tsx
 'use client'
 
 import { useState } from 'react'
-import { Address } from '../types'
+import { Address, Order } from '../types'
 import UserProfile from './UserProfile'
 import UserOrders from './UserOrders'
 import UserReviews from './UserReviews'
 import UserAddresses from './UserAddresses'
-interface BaseUserInfo {
+
+// Define the actual review structure we're using
+interface UserReview {
+  id: string
+  rating: number
+  comment: string | null
+  createdAt: Date
+  updatedAt: Date
+  product: {
+    name: string
+    images: string[]
+    id?: string
+  }
+}
+
+// Define proper types for each component
+interface UserProfileData {
   id: string
   name: string | null
   email: string
@@ -17,55 +32,49 @@ interface BaseUserInfo {
   createdAt: Date
   updatedAt: Date
   phone?: string | null
+  addresses: Address[]
+  orders?: Order[]
+  reviews?: UserReview[]
+  _count?: {
+    orders: number
+    reviews: number
+    wishlist: number
+  }
 }
-interface UserDetailTabsProps {
-  user: {
+
+interface UserOrdersData {
+  id: string
+  name: string | null
+  email: string
+  orders: Array<{
     id: string
-    name: string | null
-    email: string
-    role: string
-    emailVerified: Date | null
-    image: string | null
+    total: number
+    status: string
+    paymentMethod?: string
     createdAt: Date
     updatedAt: Date
-    addresses: Address[]
-    phone: string | null
-    orders: Array<{
+    orderItems: Array<{
       id: string
-      total: number
-      status: string
-      paymentMethod?: string
-      createdAt: Date
-      updatedAt: Date
-      orderItems: Array<{
-        id: string
-        quantity: number
-        price: number
-        product: {
-          name: string
-          images: string[]
-        }
-      }>
-    }>
-    reviews: Array<{
-      id: string
-      rating: number
-      comment: string | null
-      createdAt: Date
-      updatedAt: Date
+      quantity: number
+      price: number
       product: {
         name: string
         images: string[]
-        // Make id optional since Prisma might not include it
-        id?: string
       }
     }>
-    _count: {
-      orders: number
-      reviews: number
-      wishlist: number
-    }
-  }
+  }>
+}
+
+interface UserReviewsData {
+  reviews: UserReview[]
+}
+
+interface UserAddressesData {
+  addresses: Address[]
+}
+
+interface UserDetailTabsProps {
+  user: UserProfileData
   userStats: {
     totalSpent: number
     totalOrders: number
@@ -79,27 +88,49 @@ export default function UserDetailTabs({ user, userStats }: UserDetailTabsProps)
   const [activeTab, setActiveTab] = useState('profile')
 
   const tabs = [
-    { id: 'profile', name: 'Profile', component: UserProfile },
-    { id: 'orders', name: 'Orders', component: UserOrders },
-    { id: 'reviews', name: 'Reviews', component: UserReviews },
-    { id: 'addresses', name: 'Addresses', component: UserAddresses },
+    { id: 'profile', name: 'Profile' },
+    { id: 'orders', name: 'Orders' },
+    { id: 'reviews', name: 'Reviews' },
+    { id: 'addresses', name: 'Addresses' },
   ]
 
-  const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component
+  // Prepare user data for each component with proper typing
+  const getUserForComponent = (tabId: string) => {
+    switch (tabId) {
+      case 'profile':
+        return user as UserProfileData
+      case 'orders':
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          orders: user.orders || []
+        } as UserOrdersData
+      case 'reviews':
+        return {
+          reviews: user.reviews || []
+        } as UserReviewsData
+      case 'addresses':
+        return {
+          addresses: user.addresses || []
+        } as UserAddressesData
+      default:
+        return user
+    }
+  }
 
-  // Render the appropriate component with the right props
   const renderActiveComponent = () => {
-    if (!ActiveComponent) return null
+    const userForComponent = getUserForComponent(activeTab)
 
     switch (activeTab) {
       case 'profile':
-        return <ActiveComponent user={user} />
+        return <UserProfile user={userForComponent as UserProfileData} />
       case 'orders':
-        return <ActiveComponent user={user} />
+        return <UserOrders user={userForComponent as UserOrdersData} />
       case 'reviews':
-        return <ActiveComponent user={user} />
+        return <UserReviews user={userForComponent as UserReviewsData} />
       case 'addresses':
-        return <ActiveComponent user={user} />
+        return <UserAddresses user={userForComponent as UserAddressesData} />
       default:
         return null
     }
@@ -120,13 +151,16 @@ export default function UserDetailTabs({ user, userStats }: UserDetailTabsProps)
                 }`}
             >
               <span>{tab.name}</span>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${activeTab === tab.id
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-gray-100 text-gray-600'
-                }`}>
+              <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${activeTab === tab.id
+                  ? 'bg-blue-100 text-blue-800'
+                  : 'bg-gray-100 text-gray-600'
+                  }`}
+              >
                 {tab.id === 'orders' && userStats.totalOrders}
                 {tab.id === 'reviews' && userStats.totalReviews}
                 {tab.id === 'addresses' && user.addresses.length}
+                {tab.id === 'profile' && ''}
               </span>
             </button>
           ))}

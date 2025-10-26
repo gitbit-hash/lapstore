@@ -5,7 +5,7 @@ import { prisma } from '@/app/lib/prisma'
 export async function POST(request: NextRequest) {
   try {
     console.log('🛒 Starting guest order creation...')
-    const { items, shippingInfo, paymentMethod, total } = await request.json()
+    const { items, shippingInfo, paymentMethod } = await request.json()
 
     console.log('📦 Guest order items:', items)
     console.log('🏠 Guest shipping info:', shippingInfo)

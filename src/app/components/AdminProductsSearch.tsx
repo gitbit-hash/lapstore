@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 interface AdminProductsSearchProps {
@@ -11,7 +11,6 @@ interface AdminProductsSearchProps {
 
 export default function AdminProductsSearch({ initialSearch = '' }: AdminProductsSearchProps) {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState(initialSearch)
 
   const handleSearch = (e: React.FormEvent) => {

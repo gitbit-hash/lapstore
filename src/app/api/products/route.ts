@@ -4,6 +4,7 @@ import { prisma } from '@/app/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/auth'
 import { UserRole } from '@/app/types'
+import { Prisma } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
     try {
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
 
         const skip = (page - 1) * limit
 
-        const where: any = {}
+        const where: Prisma.ProductWhereInput = {}
 
         if (search) {
             where.OR = [

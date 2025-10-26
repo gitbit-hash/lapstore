@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useCartStore } from '../stores/cartStore'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function CheckoutPage() {
     const { data: session, status } = useSession()
@@ -165,7 +166,7 @@ export default function CheckoutPage() {
                                 <h3 className="text-lg font-semibold text-gray-900">Guest Checkout</h3>
                             </div>
                             <p className="text-gray-600 text-sm">
-                                Checkout quickly without creating an account. We'll only ask for essential information.
+                                Checkout quickly without creating an account. We&apos;ll only ask for essential information.
                             </p>
                             <ul className="mt-3 text-sm text-gray-600 space-y-1">
                                 <li>✓ No password required</li>
@@ -210,7 +211,7 @@ export default function CheckoutPage() {
                                 </h2>
                                 {!session && (
                                     <p className="text-sm text-gray-600 mb-4">
-                                        We'll use this information to process your order and send updates.
+                                        We&apos;ll use this information to process your order and send updates.
                                     </p>
                                 )}
 
@@ -442,11 +443,15 @@ export default function CheckoutPage() {
                                 {items.map((item) => (
                                     <div key={item.id} className="flex items-center space-x-3">
                                         <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                                            <img
-                                                src={item.images[0] || '/images/placeholder.jpg'}
-                                                alt={item.name}
-                                                className="w-12 h-12 object-cover rounded"
-                                            />
+                                            <div className="relative w-12 h-12">
+                                                <Image
+                                                    src={item.images[0] || '/images/placeholder.jpg'}
+                                                    alt={item.name}
+                                                    fill
+                                                    className="object-cover rounded"
+                                                    sizes="48px"
+                                                />
+                                            </div>
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-sm font-medium text-gray-900 truncate">

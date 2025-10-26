@@ -1,4 +1,4 @@
-// src/app/admin/orders/[id]/page
+// src/app/admin/orders/[id]/page.tsx
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/auth'
 import { redirect } from 'next/navigation'
@@ -6,6 +6,8 @@ import { prisma } from '@/app/lib/prisma'
 import { UserRole } from '@/app/types'
 import Link from 'next/link'
 import { OrderStatusUpdate } from '@/app/components/OrderStatusUpdate'
+import Image from 'next/image'
+import { Prisma } from '@prisma/client'
 
 interface OrderDetailPageProps {
   params: Promise<{ id: string }>
@@ -26,20 +28,22 @@ interface ShippingAddress {
 }
 
 // Helper function to parse shipping address
-function parseShippingAddress(address: any): ShippingAddress | null {
+function parseShippingAddress(address: Prisma.JsonValue | null): ShippingAddress | null {
   if (!address || typeof address !== 'object') return null;
 
+  const addr = address as Record<string, unknown>;
+
   return {
-    firstName: address.firstName || address.firstName || '',
-    lastName: address.lastName || address.lastName || '',
-    email: address.email || '',
-    phone: address.phone || '',
-    address: address.address || address.street || '',
-    city: address.city || '',
-    state: address.state || '',
-    postalCode: address.postalCode || address.zipCode || '',
-    country: address.country || 'US',
-    notes: address.notes || ''
+    firstName: typeof addr.firstName === 'string' ? addr.firstName : '',
+    lastName: typeof addr.lastName === 'string' ? addr.lastName : '',
+    email: typeof addr.email === 'string' ? addr.email : '',
+    phone: typeof addr.phone === 'string' ? addr.phone : '',
+    address: typeof addr.address === 'string' ? addr.address : typeof addr.street === 'string' ? addr.street : '',
+    city: typeof addr.city === 'string' ? addr.city : '',
+    state: typeof addr.state === 'string' ? addr.state : '',
+    postalCode: typeof addr.postalCode === 'string' ? addr.postalCode : typeof addr.zipCode === 'string' ? addr.zipCode : '',
+    country: typeof addr.country === 'string' ? addr.country : 'US',
+    notes: typeof addr.notes === 'string' ? addr.notes : ''
   };
 }
 
@@ -86,7 +90,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Order Not Found</h2>
-        <p className="text-gray-600 mb-6">The order you're looking for doesn't exist.</p>
+        <p className="text-gray-600 mb-6">The order you&apos;re looking for doesn&apos;t exist.</p>
         <Link
           href="/admin/orders"
           className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -104,7 +108,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const tax = (order.total - shipping) * 0.08
 
   // Parse shipping address
-  const shippingAddress = parseShippingAddress(order.shippingAddress)
+  const shippingAddress = parseShippingAddress(order.shippingAddress as Prisma.JsonValue)
 
   return (
     <div className="space-y-6">
@@ -136,11 +140,15 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                 {order.orderItems.map((item) => (
                   <div key={item.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                     <div className="flex items-center space-x-4">
-                      <img
-                        src={item.product.images[0] || '/images/placeholder.jpg'}
-                        alt={item.product.name}
-                        className="w-16 h-16 object-cover rounded-lg"
-                      />
+                      <div className="relative w-16 h-16">
+                        <Image
+                          src={item.product.images[0] || '/images/placeholder.jpg'}
+                          alt={item.product.name}
+                          fill
+                          className="object-cover rounded-lg"
+                          sizes="64px"
+                        />
+                      </div>
                       <div>
                         <h3 className="font-medium text-gray-900">{item.product.name}</h3>
                         <p className="text-sm text-gray-500">{item.product.category.name}</p>

@@ -5,10 +5,19 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import CategoryForm from '@/app/components/CategoryForm'
 
+interface Category {
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+  createdAt?: string
+  updatedAt?: string
+}
+
 export default function EditCategoryPage() {
   const params = useParams()
   const router = useRouter()
-  const [category, setCategory] = useState<any>(null)
+  const [category, setCategory] = useState<Category | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -38,7 +47,7 @@ export default function EditCategoryPage() {
     }
   }, [categoryId, router])
 
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: { name: string; slug: string; description?: string }) => {
     setIsSubmitting(true)
 
     try {
@@ -77,7 +86,9 @@ export default function EditCategoryPage() {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Category Not Found</h2>
-        <p className="text-gray-600 mb-6">The category you're trying to edit doesn't exist.</p>
+        <p className="text-gray-600 mb-6">
+          The category you&apos;re trying to edit doesn&apos;t exist.
+        </p>
         <button
           onClick={() => router.push('/admin/categories')}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"

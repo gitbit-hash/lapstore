@@ -1,9 +1,10 @@
-// asrc/pp/checkout/success/page.tsx
+// src/app/checkout/success/page.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useCartStore } from '../../stores/cartStore'
 import { CheckCircleIcon, TruckIcon } from '@heroicons/react/24/outline'
 
@@ -48,19 +49,7 @@ export default function CheckoutSuccess() {
     const [order, setOrder] = useState<Order | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
-    useEffect(() => {
-        // Clear cart on success
-        clearCart()
-
-        // Fetch order details if we have an orderId
-        if (orderId) {
-            fetchOrderDetails()
-        } else {
-            setIsLoading(false)
-        }
-    }, [orderId, clearCart])
-
-    const fetchOrderDetails = async () => {
+    const fetchOrderDetails = useCallback(async () => {
         try {
             // For now, we'll create a mock order since the API might not be ready
             // In production, you would call your actual API
@@ -112,7 +101,7 @@ export default function CheckoutSuccess() {
             }, 1000)
 
             // Uncomment this when your API is ready:
-
+            /*
             const endpoint = isGuest ? `/api/orders/guest/${orderId}` : `/api/orders/${orderId}`
             const response = await fetch(endpoint)
 
@@ -123,13 +112,25 @@ export default function CheckoutSuccess() {
                 console.error('Failed to fetch order details')
             }
             setIsLoading(false)
-
+            */
 
         } catch (error) {
             console.error('Error fetching order details:', error)
             setIsLoading(false)
         }
-    }
+    }, [orderId]) // Removed isGuest from dependencies
+
+    useEffect(() => {
+        // Clear cart on success
+        clearCart()
+
+        // Fetch order details if we have an orderId
+        if (orderId) {
+            fetchOrderDetails()
+        } else {
+            setIsLoading(false)
+        }
+    }, [orderId, clearCart, fetchOrderDetails])
 
     // Calculate order totals from order items
     const calculateTotals = () => {
@@ -168,7 +169,7 @@ export default function CheckoutSuccess() {
                         Order Confirmed!
                     </h1>
                     <p className="text-lg text-gray-600">
-                        Thank you for your order. We're getting it ready for you.
+                        Thank you for your order. We&apos;re getting it ready for you.
                     </p>
                     {isGuest && (
                         <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200 max-w-md mx-auto">
@@ -193,18 +194,21 @@ export default function CheckoutSuccess() {
                                         {order.orderItems.map((item) => (
                                             <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                                                 <div className="flex items-center space-x-3">
-                                                    <img
-                                                        src={item.product.images[0] || '/images/placeholder.jpg'}
-                                                        alt={item.product.name}
-                                                        className="w-12 h-12 object-cover rounded-lg"
-                                                    />
+                                                    <div className="w-12 h-12 relative">
+                                                        <Image
+                                                            src={item.product.images[0] || '/images/placeholder.jpg'}
+                                                            alt={item.product.name}
+                                                            fill
+                                                            className="object-cover rounded-lg"
+                                                        />
+                                                    </div>
                                                     <div>
                                                         <h3 className="font-medium text-gray-900 text-sm">{item.product.name}</h3>
                                                         <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="font-medium text-gray-900">`${(item.price * item.quantity).toFixed(0)} EGP`</p>
+                                                    <p className="font-medium text-gray-900">{`${(item.price * item.quantity).toFixed(0)} EGP`}</p>
                                                     <p className="text-sm text-gray-500">{item.price.toFixed(0)} EGP each</p>
                                                 </div>
                                             </div>
@@ -315,7 +319,7 @@ export default function CheckoutSuccess() {
                                         </li>
                                         <li className="flex items-center">
                                             <span className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mr-2 text-sm">2</span>
-                                            You'll receive a confirmation email with tracking information
+                                            You&apos;ll receive a confirmation email with tracking information
                                         </li>
                                         <li className="flex items-center">
                                             <span className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mr-2 text-sm">3</span>
