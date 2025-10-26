@@ -1,10 +1,30 @@
 // src/app/components/UserOrders.tsx
 import Link from 'next/link'
-import { UserDetail, Order, OrderItem } from '../types'
+import { Order } from '../types'
 
 interface UserOrdersProps {
-  user: UserDetail,
-  orderItem: OrderItem
+  user: {
+    id: string
+    name: string | null
+    email: string
+    orders: Array<{
+      id: string
+      total: number
+      status: string
+      paymentMethod?: string
+      createdAt: Date
+      updatedAt: Date
+      orderItems: Array<{
+        id: string
+        quantity: number
+        price: number
+        product: {
+          name: string
+          images: string[]
+        }
+      }>
+    }>
+  }
 }
 
 export default function UserOrders({ user }: UserOrdersProps) {

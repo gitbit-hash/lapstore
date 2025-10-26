@@ -7,7 +7,8 @@ import { StarIcon as StarOutline } from '@heroicons/react/24/outline'
 import { prisma } from '@/app/lib/prisma'
 import ProductGrid from '@/app/components/ProductGrid'
 import AddToCartButton from '../../components/AddToCartButton'
-import { ProductDetail, CartProduct, Product } from '../../types'
+import { ProductDetail, CartProduct, Product, Category, Review } from '../../types'
+import { Metadata } from 'next'
 
 interface ProductPageProps {
     params: Promise<{
@@ -15,16 +16,7 @@ interface ProductPageProps {
     }>
 }
 
-type ProductWithRelations = Product & {
-    category: {
-        id: string
-        name: string
-        slug: string
-    }
-    reviews: Array<{
-        rating: number
-    }>
-}
+type ProductWithRelations = Product & Category & Review[]
 
 async function getProduct(id: string) {
     try {
@@ -88,7 +80,7 @@ async function getRelatedProducts(categoryId: string, currentProductId: string) 
         })
 
         // Calculate average ratings with proper typing
-        const productsWithRatings = products.map((product: ProductWithRelations) => ({
+        const productsWithRatings = products.map((product: any) => ({
             ...product,
             averageRating: product.reviews.length > 0
                 ? product.reviews.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) / product.reviews.length
@@ -321,7 +313,7 @@ export async function generateStaticParams() {
         select: { id: true }
     })
 
-    return products.map((product: ProductWithRelations) => ({
+    return products.map((product: any) => ({
         id: product.id
     }))
 }
@@ -346,12 +338,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
             title: product.name,
             description: product.description || `Buy ${product.name} at LapStore`,
             images: product.images.length > 0 ? product.images : ['/images/og-image.jpg'],
-            type: 'product',
-            price: {
-                amount: product.price.toString(),
-                currency: 'USD',
-            },
-            availability: product.inventory > 0 ? 'in stock' : 'out of stock',
+            type: 'website',
         },
         twitter: {
             card: 'summary_large_image',

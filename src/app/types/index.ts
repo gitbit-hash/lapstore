@@ -1,5 +1,6 @@
 // src/app/types/index.ts
 import { DefaultSession } from 'next-auth'
+import { User } from '@prisma/client'
 
 declare module 'next-auth' {
     interface Session {
@@ -133,6 +134,7 @@ export interface AdminUser {
     name: string | null
     email: string
     role: UserRole
+    phone: string
     emailVerified: Date | null
     createdAt: Date
     updatedAt: Date
@@ -154,6 +156,7 @@ export interface UserDetail {
     id: string
     name: string | null
     email: string
+    phone: string | null
     role: UserRole
     emailVerified: Date | null
     image: string | null
@@ -169,6 +172,11 @@ export interface UserDetail {
         averageOrderValue: number
         totalReviews: number
         totalWishlistItems: number
+    }
+    _count?: {
+        orders: number
+        reviews: number
+        wishlist: number
     }
 }
 
@@ -223,4 +231,26 @@ export interface Address {
     isDefault: boolean
     createdAt: Date
     updatedAt: Date
+}
+
+export type ProfileUser = User & {
+    addresses: Address[]
+    orders?: (Order & {
+        orderItems: (OrderItem & {
+            product: {
+                id: string
+                name: string
+                images: string[]
+                price: number
+                category: {
+                    name: string
+                }
+            }
+        })[]
+    })[]
+    _count: {
+        orders: number
+        reviews: number
+        wishlist: number
+    }
 }

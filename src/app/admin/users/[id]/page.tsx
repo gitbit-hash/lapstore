@@ -23,19 +23,13 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
   try {
     const user = await prisma.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        emailVerified: true,
-        image: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
         addresses: {
           orderBy: { isDefault: 'desc' }
         },
         orders: {
+          orderBy: { createdAt: 'desc' },
+          take: 10,
           include: {
             orderItems: {
               include: {
@@ -47,22 +41,30 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
                 }
               }
             }
-          },
-          orderBy: { createdAt: 'desc' },
-          take: 10
+          }
         },
         reviews: {
           include: {
             product: {
               select: {
-                id: true,
                 name: true,
-                images: true
+                images: true,
+                id: true
               }
             }
           },
-          orderBy: { createdAt: 'desc' },
-          take: 10
+          orderBy: { createdAt: 'desc' }
+        },
+        wishlist: { // Add wishlist
+          include: {
+            product: {
+              select: {
+                name: true,
+                images: true,
+                price: true
+              }
+            }
+          }
         },
         _count: {
           select: {
@@ -74,7 +76,19 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
       }
     })
 
-    if (!user) {
+    const compatibleUser = user ? {
+      ...user,
+      phone: user.phone || null, // Provide default if missing
+      wishlist: user.wishlist || [], // Provide default array
+      statistics: {
+        totalOrders: user._count.orders,
+        totalReviews: user._count.reviews,
+        totalWishlist: user._count.wishlist,
+        // Add any other required statistics
+      }
+    } : null
+
+    if (!compatibleUser) {
       return (
         <div className="text-center py-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">User Not Found</h2>
@@ -90,23 +104,23 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
     }
 
     // Calculate user statistics with safe defaults
-    const totalSpent = user.orders.reduce((sum, order) => sum + order.total, 0)
-    const averageOrderValue = user._count.orders > 0 ? totalSpent / user._count.orders : 0
+    const totalSpent = compatibleUser.orders.reduce((sum, order) => sum + order.total, 0)
+    const averageOrderValue = compatibleUser._count.orders > 0 ? totalSpent / compatibleUser._count.orders : 0
 
     const userStats = {
       totalSpent,
-      totalOrders: user._count.orders,
+      totalOrders: compatibleUser._count.orders,
       averageOrderValue,
-      totalReviews: user._count.reviews,
-      totalWishlist: user._count.wishlist
+      totalReviews: compatibleUser._count.reviews,
+      totalWishlist: compatibleUser._count.wishlist
     }
 
     // Debug: Log user data to see what's being fetched
     console.log('User data:', {
-      id: user.id,
-      email: user.email,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      id: compatibleUser.id,
+      email: compatibleUser.email,
+      createdAt: compatibleUser.createdAt,
+      updatedAt: compatibleUser.updatedAt
     })
 
     return (
@@ -124,21 +138,21 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">User Details</h1>
                 <p className="text-gray-600 mt-2">
-                  {user.name || 'No Name'} • {user.email || 'No Email'}
+                  {compatibleUser.name || 'No Name'} • {compatibleUser.email || 'No Email'}
                 </p>
               </div>
             </div>
           </div>
           <div className="flex space-x-3">
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${user.role === UserRole.SUPER_ADMIN ? 'bg-purple-100 text-purple-800' :
-              user.role === UserRole.ADMIN ? 'bg-blue-100 text-blue-800' :
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${compatibleUser.role === UserRole.SUPER_ADMIN ? 'bg-purple-100 text-purple-800' :
+              compatibleUser.role === UserRole.ADMIN ? 'bg-blue-100 text-blue-800' :
                 'bg-gray-100 text-gray-800'
               }`}>
-              {user.role.replace('_', ' ')}
+              {compatibleUser.role.replace('_', ' ')}
             </span>
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${user.emailVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${compatibleUser.emailVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
               }`}>
-              {user.emailVerified ? 'Verified' : 'Unverified'}
+              {compatibleUser.emailVerified ? 'Verified' : 'Unverified'}
             </span>
           </div>
         </div>
@@ -173,7 +187,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
         </div>
 
         {/* User Detail Tabs */}
-        <UserDetailTabs user={user} userStats={userStats} />
+        <UserDetailTabs user={compatibleUser} userStats={userStats} />
       </div>
     )
   } catch (error) {

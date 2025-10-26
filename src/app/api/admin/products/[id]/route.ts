@@ -71,13 +71,21 @@ export async function PUT(
     // Filter out empty images
     const filteredImages = data.images.filter((image: string) => image.trim() !== '')
 
-    // Clean specifications - remove empty values but keep the structure
-    const cleanSpecifications = data.specifications ?
-      Object.fromEntries(
+    // Clean specifications - properly typed for Prisma JSON field
+    let cleanSpecifications: any = null
+    if (data.specifications && Object.keys(data.specifications).length > 0) {
+      // Remove empty values but keep the structure
+      const filteredSpecs = Object.fromEntries(
         Object.entries(data.specifications).filter(([_, value]) =>
           value !== null && value !== undefined && value !== ''
         )
-      ) : {}
+      )
+
+      // Only set specifications if there are valid values
+      if (Object.keys(filteredSpecs).length > 0) {
+        cleanSpecifications = filteredSpecs
+      }
+    }
 
     const product = await prisma.product.update({
       where: { id },
@@ -88,7 +96,7 @@ export async function PUT(
         inventory: parseInt(data.inventory.toString()),
         categoryId: data.categoryId,
         images: filteredImages,
-        specifications: cleanSpecifications,
+        specifications: cleanSpecifications, // This can now be null or object
         isActive: data.isActive,
         updatedAt: new Date()
       },
@@ -103,7 +111,6 @@ export async function PUT(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-
 // DELETE product (soft delete by setting isActive to false)
 export async function DELETE(
   request: NextRequest,

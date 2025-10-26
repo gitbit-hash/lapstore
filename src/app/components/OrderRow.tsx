@@ -15,7 +15,7 @@ interface OrderRowProps {
       id: string
       name: string | null
       email: string
-      phone: string
+      phone: string | null
     }
     orderItems: Array<{
       id: string

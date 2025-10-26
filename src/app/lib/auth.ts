@@ -5,6 +5,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
+import { UserRole } from '../types'
 
 // Define a type for user with password
 type UserWithPassword = {
@@ -70,7 +71,7 @@ export const authOptions: NextAuthOptions = {
                         id: user.id,
                         email: user.email,
                         name: user.name,
-                        role: user.role,
+                        role: user.role as UserRole
                     }
                 } catch (error) {
                     console.error('Auth error:', error)

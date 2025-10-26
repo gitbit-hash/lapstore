@@ -7,7 +7,17 @@ import UserProfile from './UserProfile'
 import UserOrders from './UserOrders'
 import UserReviews from './UserReviews'
 import UserAddresses from './UserAddresses'
-
+interface BaseUserInfo {
+  id: string
+  name: string | null
+  email: string
+  role: string
+  emailVerified: Date | null
+  image: string | null
+  createdAt: Date
+  updatedAt: Date
+  phone?: string | null
+}
 interface UserDetailTabsProps {
   user: {
     id: string
@@ -19,6 +29,7 @@ interface UserDetailTabsProps {
     createdAt: Date
     updatedAt: Date
     addresses: Address[]
+    phone: string | null
     orders: Array<{
       id: string
       total: number
@@ -84,20 +95,11 @@ export default function UserDetailTabs({ user, userStats }: UserDetailTabsProps)
       case 'profile':
         return <ActiveComponent user={user} />
       case 'orders':
-        return <ActiveComponent user={{
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          orders: user.orders
-        }} />
+        return <ActiveComponent user={user} />
       case 'reviews':
-        return <ActiveComponent user={{
-          reviews: user.reviews
-        }} />
+        return <ActiveComponent user={user} />
       case 'addresses':
-        return <ActiveComponent user={{
-          addresses: user.addresses
-        }} />
+        return <ActiveComponent user={user} />
       default:
         return null
     }

@@ -1,6 +1,7 @@
 // src/app/components/UserProfile.tsx
 import { Address } from '../types'
 
+// Update your UserProfileProps and other interfaces to make properties optional
 interface UserProfileProps {
   user: {
     id: string
@@ -8,33 +9,14 @@ interface UserProfileProps {
     email: string
     role: string
     emailVerified: Date | null
-    phone: string,
     image: string | null
     createdAt: Date
     updatedAt: Date
+    phone?: string | null
+    // Make other properties optional
     addresses?: Address[]
-    orders?: Array<{
-      id: string
-      createdAt: Date
-      total: number
-      status: string
-      orderItems: Array<{
-        product: {
-          name: string
-          images: string[]
-        }
-      }>
-    }>
-    reviews?: Array<{
-      id: string
-      createdAt: Date
-      rating: number
-      comment: string | null
-      product: {
-        name: string
-        images: string[]
-      }
-    }>
+    orders?: any[]
+    reviews?: any[]
     _count?: {
       orders: number
       reviews: number

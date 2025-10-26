@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '../lib/prisma'
 import { UserRole } from '../types'
 import Link from 'next/link'
-
+import { ProfileUser } from '../types'
 export default async function Profile() {
     const session = await getServerSession(authOptions)
 
@@ -16,14 +16,14 @@ export default async function Profile() {
     const isAdmin = session.user.role === UserRole.ADMIN || session.user.role === UserRole.SUPER_ADMIN
     const isCustomer = !isAdmin
 
-    // Get user data with proper includes
+    // Get user data with proper typing
     const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         include: {
             addresses: {
                 orderBy: { isDefault: 'desc' }
             },
-            ...(isCustomer ? { // Only include orders if customer (not admin)
+            ...(isCustomer ? {
                 orders: {
                     orderBy: { createdAt: 'desc' },
                     take: 5,
@@ -32,8 +32,15 @@ export default async function Profile() {
                             include: {
                                 product: {
                                     select: {
+                                        id: true,
                                         name: true,
-                                        images: true
+                                        images: true,
+                                        price: true,
+                                        category: {
+                                            select: {
+                                                name: true
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -49,7 +56,7 @@ export default async function Profile() {
                 }
             }
         }
-    })
+    }) as ProfileUser | null
 
     if (!user) {
         redirect('/auth/signin')
@@ -64,6 +71,11 @@ export default async function Profile() {
             default:
                 return 'Customer'
         }
+    }
+
+    // Type guard to check if user has orders
+    const hasOrders = (user: ProfileUser): user is ProfileUser & { orders: NonNullable<ProfileUser['orders']> } => {
+        return isCustomer && Array.isArray(user.orders) && user.orders.length > 0
     }
 
     return (
@@ -113,7 +125,7 @@ export default async function Profile() {
                     </div>
 
                     {/* Recent Orders - Only show for customers */}
-                    {isCustomer && 'orders' in user && user.orders && user.orders.length > 0 && (
+                    {hasOrders(user) && (
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                             <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Orders</h2>
                             <div className="space-y-4">
@@ -140,9 +152,9 @@ export default async function Profile() {
                                             </div>
                                         </div>
                                         <div className="text-sm text-gray-600">
-                                            {'orderItems' in order ? order.orderItems.length : 0} item{('orderItems' in order ? order.orderItems.length : 0) !== 1 ? 's' : ''}
+                                            {order.orderItems.length} item{order.orderItems.length !== 1 ? 's' : ''}
                                         </div>
-                                        {'orderItems' in order && order.orderItems.length > 0 && (
+                                        {order.orderItems.length > 0 && (
                                             <div className="mt-2 text-xs text-gray-500">
                                                 {order.orderItems.slice(0, 2).map((item) => (
                                                     <div key={item.id}>
@@ -161,7 +173,7 @@ export default async function Profile() {
                     )}
 
                     {/* No Orders Message for customers */}
-                    {isCustomer && 'orders' in user && (!user.orders || user.orders.length === 0) && (
+                    {isCustomer && (!user.orders || user.orders.length === 0) && (
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
                             <h2 className="text-xl font-semibold text-gray-900 mb-2">No Orders Yet</h2>
                             <p className="text-gray-600 mb-4">You haven't placed any orders yet.</p>

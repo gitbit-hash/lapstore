@@ -143,12 +143,15 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest) {
   try {
-    const { id } = await params
+    // Get order ID from query parameters instead of route params
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json({ error: 'Order ID is required' }, { status: 400 })
+    }
 
     const order = await prisma.order.findUnique({
       where: { id },
