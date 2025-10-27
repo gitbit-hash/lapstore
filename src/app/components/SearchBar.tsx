@@ -43,25 +43,41 @@ export default function SearchBar() {
         router.push(`/products?${params.toString()}`)
     }
 
+    const handleIconClick = () => {
+        // Trigger form submission when icon is clicked
+        const form = document.querySelector('form') as HTMLFormElement
+        if (form) {
+            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
+        }
+    }
+
     return (
         <form onSubmit={handleSearch} className="w-full">
             <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <MagnifyingGlassIcon className="h-4 w-4 lg:h-5 lg:w-5 text-gray-400" />
-                </div>
+                {/* Clickable magnifying glass icon */}
+                <button
+                    type="button"
+                    onClick={handleIconClick}
+                    className="absolute inset-y-0 left-0 pl-3 flex items-center focus:outline-none"
+                    aria-label="Search"
+                >
+                    <MagnifyingGlassIcon className="h-4 w-4 lg:h-5 lg:w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                </button>
                 <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                        // Handle Enter key press
+                        if (e.key === 'Enter') {
+                            e.preventDefault()
+                            handleSearch(e)
+                        }
+                    }}
                     placeholder="Search products..."
-                    className="block w-full pl-10 pr-3 lg:pl-10 lg:pr-10 py-2 lg:py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
+                    className="block w-full pl-10 pr-3 lg:pl-10 lg:pr-3 py-2 lg:py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
                 />
-                <button
-                    type="submit"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-3 lg:px-4 py-1 lg:py-1.5 rounded-md text-sm hover:bg-blue-700 transition-colors"
-                >
-                    Search
-                </button>
+                {/* Search button removed */}
             </div>
         </form>
     )
