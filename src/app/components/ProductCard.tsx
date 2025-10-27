@@ -131,7 +131,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                         </span>
                     </div>
 
-                    <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="font-semibold text-lg text-blue-400 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                         {product.name}
                     </h3>
 

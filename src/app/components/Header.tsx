@@ -16,7 +16,7 @@ import Image from 'next/image'
 import { useCartStore } from '../stores/cartStore'
 import { useSession, signOut } from 'next-auth/react'
 import { useState, useEffect } from 'react'
-import { UserRole } from '../types'
+import { UserRole, Category } from '../types'
 import SearchBar from './SearchBar'
 import { usePathname } from 'next/navigation'
 
@@ -26,11 +26,33 @@ export default function Header() {
     const [showUserMenu, setShowUserMenu] = useState(false)
     const [showMobileMenu, setShowMobileMenu] = useState(false)
     const [isAnimating, setIsAnimating] = useState(false)
+    const [categories, setCategories] = useState<Category[]>([])
+    const [isLoadingCategories, setIsLoadingCategories] = useState(true)
+    const [isCategoriesOpen, setIsCategoriesOpen] = useState(false)
     const pathname = usePathname()
 
     const isAdmin = session?.user?.role === UserRole.ADMIN || session?.user?.role === UserRole.SUPER_ADMIN
     const isCustomer = !isAdmin
     const isAdminPage = pathname?.startsWith('/admin')
+
+    // Fetch categories on component mount
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('/api/categories')
+                if (response.ok) {
+                    const categoriesData = await response.json()
+                    setCategories(categoriesData)
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error)
+            } finally {
+                setIsLoadingCategories(false)
+            }
+        }
+
+        fetchCategories()
+    }, [])
 
     // Close mobile menu when route changes
     useEffect(() => {
@@ -67,26 +89,21 @@ export default function Header() {
         }, 300)
     }
 
+    // Group categories by type for desktop dropdown
+    const groupedCategories = categories.reduce((acc, category) => {
+        const type = getCategoryType(category.name)
+        if (!acc[type]) {
+            acc[type] = []
+        }
+        acc[type].push(category)
+        return acc
+    }, {} as Record<string, Category[]>)
+
     // Main menu items
     const mainMenuItems = [
         { href: '/', icon: HomeIcon, label: 'Home' },
         { href: '/products', icon: ShoppingBagIcon, label: 'Products' },
         { href: '/about', icon: UserIcon, label: 'About' },
-    ]
-
-    // Main categories for mobile menu
-    const mainCategories = [
-        { name: 'Gaming Laptops', href: '/products?categories=gaming-laptops' },
-        { name: 'Business Laptops', href: '/products?categories=business-laptops' },
-        { name: 'Standard Laptops', href: '/products?categories=standard-laptops' },
-        { name: 'Gaming Desktops', href: '/products?categories=gaming-desktops' },
-        { name: 'Workstation Desktops', href: '/products?categories=workstation-desktops' },
-        { name: 'Graphics Cards', href: '/products?categories=graphics-cards' },
-        { name: 'PC RAM', href: '/products?categories=pc-ram' },
-        { name: 'SSD Storage', href: '/products?categories=ssd-storage' },
-        { name: 'Gaming Monitors', href: '/products?categories=gaming-monitors' },
-        { name: 'Gaming Mice', href: '/products?categories=gaming-mice' },
-        { name: 'Mechanical Keyboards', href: '/products?categories=mechanical-keyboards' },
     ]
 
     // Don't show regular header on admin pages
@@ -320,28 +337,44 @@ export default function Header() {
                             </Link>
 
                             {/* Products Categories Dropdown */}
-                            <div className="relative group">
-                                <button className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 text-sm flex items-center">
+                            <div className="relative">
+                                <button
+                                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 text-sm flex items-center"
+                                    onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                                >
                                     Products Categories ↓
                                 </button>
-                                <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 transform group-hover:translate-y-0 translate-y-1">
-                                    {/* Categories dropdown content remains the same but with transitions */}
-                                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-100">
-                                        Laptops
+                                {isCategoriesOpen && (
+                                    <div className="absolute top-full left-0 mt-1 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-y-auto">
+                                        {isLoadingCategories ? (
+                                            <div className="p-4">
+                                                <div className="animate-pulse">
+                                                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                                                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                                                    <div className="h-4 bg-gray-200 rounded"></div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            Object.entries(groupedCategories).map(([type, typeCategories]) => (
+                                                <div key={type}>
+                                                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-100 bg-gray-50">
+                                                        {type}
+                                                    </div>
+                                                    {typeCategories.map((category) => (
+                                                        <Link
+                                                            key={category.id}
+                                                            href={`/products?categories=${category.slug}`}
+                                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                                                            onClick={() => setIsCategoriesOpen(false)}
+                                                        >
+                                                            {category.name}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            ))
+                                        )}
                                     </div>
-                                    <Link href="/products?categories=gaming-laptops" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150">
-                                        Gaming Laptops
-                                    </Link>
-                                    <Link href="/products?categories=business-laptops" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150">
-                                        Business Laptops
-                                    </Link>
-                                    <Link href="/products?categories=standard-laptops" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150">
-                                        Standard Laptops
-                                    </Link>
-
-                                    {/* Add transitions to all dropdown items */}
-                                    {/* ... rest of categories with transition-colors duration-150 ... */}
-                                </div>
+                                )}
                             </div>
 
                             <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200 text-sm">
@@ -442,21 +475,36 @@ export default function Header() {
                                         Main Categories
                                     </h3>
                                     <nav className="space-y-2">
-                                        {mainCategories.map((category, index) => (
-                                            <Link
-                                                key={category.href}
-                                                href={category.href}
-                                                className="block py-3 px-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 transform hover:translate-x-1"
-                                                onClick={handleMobileMenuClose}
-                                                style={{
-                                                    animationDelay: `${index * 30 + 200}ms`,
-                                                    animation: showMobileMenu && !isAnimating ?
-                                                        'slideInRight 0.3s ease-out forwards' : 'none'
-                                                }}
-                                            >
-                                                {category.name}
-                                            </Link>
-                                        ))}
+                                        {isLoadingCategories ? (
+                                            // Loading skeleton for categories
+                                            Array.from({ length: 8 }).map((_, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="py-3 px-2 animate-pulse"
+                                                    style={{
+                                                        animationDelay: `${index * 30 + 200}ms`,
+                                                    }}
+                                                >
+                                                    <div className="h-4 bg-gray-200 rounded"></div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            categories.map((category, index) => (
+                                                <Link
+                                                    key={category.id}
+                                                    href={`/products?categories=${category.slug}`}
+                                                    className="block py-3 px-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 transform hover:translate-x-1"
+                                                    onClick={handleMobileMenuClose}
+                                                    style={{
+                                                        animationDelay: `${index * 30 + 200}ms`,
+                                                        animation: showMobileMenu && !isAnimating ?
+                                                            'slideInRight 0.3s ease-out forwards' : 'none'
+                                                    }}
+                                                >
+                                                    {category.name}
+                                                </Link>
+                                            ))
+                                        )}
                                     </nav>
                                 </div>
                             </div>
@@ -553,11 +601,14 @@ export default function Header() {
                 </>
             )}
 
-            {/* Close user menu when clicking outside */}
-            {showUserMenu && (
+            {/* Close dropdowns when clicking outside */}
+            {(showUserMenu || isCategoriesOpen) && (
                 <div
                     className="fixed inset-0 z-40"
-                    onClick={() => setShowUserMenu(false)}
+                    onClick={() => {
+                        setShowUserMenu(false)
+                        setIsCategoriesOpen(false)
+                    }}
                 />
             )}
 
@@ -598,4 +649,25 @@ export default function Header() {
             `}</style>
         </header>
     )
+}
+
+// Helper function to group categories by type
+function getCategoryType(categoryName: string): string {
+    const laptopKeywords = ['laptop', 'notebook', 'macbook', 'ultrabook']
+    const desktopKeywords = ['desktop', 'pc', 'workstation', 'computer']
+    const componentKeywords = ['ram', 'graphics', 'card', 'processor', 'cpu', 'gpu', 'motherboard', 'component']
+    const storageKeywords = ['ssd', 'hard drive', 'storage', 'nvme', 'hdd']
+    const monitorKeywords = ['monitor', 'display', 'screen']
+    const accessoryKeywords = ['mouse', 'keyboard', 'headset', 'camera', 'speaker', 'accessory']
+
+    const name = categoryName.toLowerCase()
+
+    if (laptopKeywords.some(keyword => name.includes(keyword))) return 'Laptops'
+    if (desktopKeywords.some(keyword => name.includes(keyword))) return 'Desktops & PCs'
+    if (componentKeywords.some(keyword => name.includes(keyword))) return 'Components'
+    if (storageKeywords.some(keyword => name.includes(keyword))) return 'Storage'
+    if (monitorKeywords.some(keyword => name.includes(keyword))) return 'Monitors'
+    if (accessoryKeywords.some(keyword => name.includes(keyword))) return 'Accessories'
+
+    return 'Other Categories'
 }
