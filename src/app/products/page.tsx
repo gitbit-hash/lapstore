@@ -1,9 +1,11 @@
 // src/app/products/page.tsx
 import ProductGrid from '../components/ProductGrid'
 import ProductFilters from '../components/ProductFilters'
+import MobileFilters from '../components/MobileFilters'
 import Pagination from '../components/Pagination'
 import { getProducts } from '../actions/products'
 import { getCategories } from '../actions/categories'
+import SortDropdown from '../components/SortDropdown'
 
 interface ProductsPageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -54,7 +56,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             {/* Header */}
             <div className="bg-white border-b">
                 <div className="container mx-auto px-4 py-4">
-
                     {/* Active Filters */}
                     {activeFilterCount > 0 && (
                         <div className="flex items-center justify-between">
@@ -69,23 +70,56 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-8">
                 <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Sidebar - Filters */}
-                    <div className="lg:w-64 flex-shrink-0">
+                    {/* Sidebar - Filters - Hidden on mobile */}
+                    <div className="hidden lg:block lg:w-64 flex-shrink-0">
                         <ProductFilters categories={categoriesData} />
                     </div>
 
                     {/* Main Content - Products */}
                     <div className="flex-1">
-                        {/* Results Info */}
-                        {productsData.pagination && (
-                            <div className="mb-6">
-                                <p className="text-gray-600">
-                                    Showing {(productsData.pagination.currentPage - 1) * 12 + 1} to{' '}
-                                    {Math.min(productsData.pagination.currentPage * 12, productsData.pagination.totalProducts)} of{' '}
-                                    {productsData.pagination.totalProducts} products
-                                </p>
+                        {/* Mobile Layout - Filters Dropdown and Sort Dropdown */}
+                        <div className="lg:hidden mb-6">
+                            <div className="flex space-x-4 items-center">
+                                {/* Mobile Filters Dropdown */}
+                                <div className="flex-1">
+                                    <MobileFilters categories={categoriesData} />
+                                </div>
+
+                                {/* Sort Dropdown */}
+                                <div className="flex-1">
+                                    <SortDropdown initialValue={sort} />
+                                </div>
                             </div>
-                        )}
+
+                            {/* Results info below for mobile */}
+                            {productsData.pagination && (
+                                <div className="mt-4">
+                                    <p className="text-gray-600 text-sm">
+                                        Showing {(productsData.pagination.currentPage - 1) * 12 + 1} to{' '}
+                                        {Math.min(productsData.pagination.currentPage * 12, productsData.pagination.totalProducts)} of{' '}
+                                        {productsData.pagination.totalProducts} products
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Desktop Layout - Sort and Results Info */}
+                        <div className="hidden lg:flex items-center justify-between mb-6">
+                            {/* Sort dropdown on left for desktop */}
+                            <div className="w-64">
+                                <SortDropdown initialValue={sort} />
+                            </div>
+                            {/* Results info on right for desktop */}
+                            {productsData.pagination && (
+                                <div>
+                                    <p className="text-gray-600">
+                                        Showing {(productsData.pagination.currentPage - 1) * 12 + 1} to{' '}
+                                        {Math.min(productsData.pagination.currentPage * 12, productsData.pagination.totalProducts)} of{' '}
+                                        {productsData.pagination.totalProducts} products
+                                    </p>
+                                </div>
+                            )}
+                        </div>
 
                         <ProductGrid products={productsData.products} />
 

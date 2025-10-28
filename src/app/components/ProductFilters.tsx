@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Category } from '../types' // Import from shared types
+import { Category } from '../types'
 
 interface ProductFiltersProps {
     categories: Category[]
@@ -13,59 +13,51 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    const [priceRange, setPriceRange] = useState({ min: '', max: '' })
     const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-    const [sortBy, setSortBy] = useState('')
 
     // Initialize state from URL params
     useEffect(() => {
         if (searchParams) {
-            setPriceRange({
-                min: searchParams.get('minPrice') || '',
-                max: searchParams.get('maxPrice') || ''
-            })
-
             const categoriesParam = searchParams.get('categories')
             setSelectedCategories(categoriesParam ? categoriesParam.split(',') : [])
-
-            setSortBy(searchParams.get('sort') || '')
         }
     }, [searchParams])
 
     const applyFilters = () => {
         const params = new URLSearchParams()
 
-        // Price filters
-        if (priceRange.min) params.set('minPrice', priceRange.min)
-        if (priceRange.max) params.set('maxPrice', priceRange.max)
-
         // Category filters
         if (selectedCategories.length > 0) {
             params.set('categories', selectedCategories.join(','))
         }
 
-        // Sort
-        if (sortBy) params.set('sort', sortBy)
-
         // Search (preserve existing search)
         if (searchParams) {
             const existingSearch = searchParams.get('search')
             if (existingSearch) params.set('search', existingSearch)
+
+            // Preserve sort
+            const existingSort = searchParams.get('sort')
+            if (existingSort) params.set('sort', existingSort)
         }
+
+        // Remove page parameter when changing filters
+        params.delete('page')
 
         router.push(`/products?${params.toString()}`)
     }
 
     const clearFilters = () => {
-        setPriceRange({ min: '', max: '' })
         setSelectedCategories([])
-        setSortBy('')
 
-        // Only preserve search when clearing filters
+        // Only preserve search and sort when clearing filters
         const params = new URLSearchParams()
         if (searchParams) {
             const existingSearch = searchParams.get('search')
             if (existingSearch) params.set('search', existingSearch)
+
+            const existingSort = searchParams.get('sort')
+            if (existingSort) params.set('sort', existingSort)
         }
 
         router.push(`/products?${params.toString()}`)
@@ -90,48 +82,6 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
                 >
                     Clear all
                 </button>
-            </div>
-
-            {/* Sort By */}
-            <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sort By
-                </label>
-                <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
-                >
-                    <option value="">Recommended</option>
-                    <option value="price-asc">Price: Low to High</option>
-                    <option value="price-desc">Price: High to Low</option>
-                    <option value="name">Name A-Z</option>
-                    <option value="newest">Newest First</option>
-                    <option value="rating">Highest Rated</option>
-                </select>
-            </div>
-
-            {/* Price Range */}
-            <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Price Range
-                </label>
-                <div className="flex space-x-2">
-                    <input
-                        type="number"
-                        placeholder="Min"
-                        value={priceRange.min}
-                        onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
-                    />
-                    <input
-                        type="number"
-                        placeholder="Max"
-                        value={priceRange.max}
-                        onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
-                    />
-                </div>
             </div>
 
             {/* Categories */}
