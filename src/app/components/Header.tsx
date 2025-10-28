@@ -164,7 +164,7 @@ export default function Header() {
                         </div>
 
                         {/* Cart Icon - Right */}
-                        <Link
+                        {!isAdmin && (<Link
                             href="/cart"
                             className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors duration-200"
                         >
@@ -174,7 +174,86 @@ export default function Header() {
                                     {getTotalItems()}
                                 </span>
                             )}
-                        </Link>
+                        </Link>)}
+                        {/* User Menu */}
+                        {status === 'loading' ? (
+                            <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse" />
+                        ) : session && (
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowUserMenu(!showUserMenu)}
+                                    className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 hover:cursor-pointer transition-colors duration-200"
+                                >
+                                    {session.user?.image ? (
+                                        <div className="w-8 h-8 relative rounded-full overflow-hidden">
+                                            <Image
+                                                src={session.user.image}
+                                                alt={session.user.name || 'User'}
+                                                fill
+                                                className="object-cover transition-transform duration-200 hover:scale-105"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <UserCircleIcon className="w-8 h-8 text-gray-400 transition-colors duration-200" />
+                                    )}
+                                </button>
+
+                                {showUserMenu && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200 animate-in fade-in-80 slide-in-from-top-5 duration-200">
+                                        <div className="px-4 py-2 border-b border-gray-100">
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {session.user?.name}
+                                            </p>
+                                            <p className="text-sm text-gray-500 truncate">
+                                                {session.user?.email}
+                                            </p>
+                                            <p className="text-xs text-gray-400 capitalize mt-1">
+                                                {session.user?.role?.toLowerCase().replace('_', ' ')}
+                                            </p>
+                                        </div>
+
+                                        <Link
+                                            href="/profile"
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                                            onClick={() => setShowUserMenu(false)}
+                                        >
+                                            Your Profile
+                                        </Link>
+
+                                        {isCustomer && (
+                                            <Link
+                                                href="/orders"
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                                                onClick={() => setShowUserMenu(false)}
+                                            >
+                                                Your Orders
+                                            </Link>
+                                        )}
+
+                                        {isAdmin && (
+                                            <Link
+                                                href="/admin"
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-t border-gray-100 transition-colors duration-150"
+                                                onClick={() => setShowUserMenu(false)}
+                                            >
+                                                Admin Dashboard
+                                            </Link>
+                                        )}
+
+                                        <button
+                                            onClick={() => {
+                                                signOut()
+                                                setShowUserMenu(false)
+                                            }}
+                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-t border-gray-100 transition-colors duration-150"
+                                        >
+                                            Sign out
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                     </div>
                 </div>
             </div>
@@ -213,7 +292,7 @@ export default function Header() {
                         {/* User Actions - Right */}
                         <div className="flex items-center space-x-4">
                             {/* Cart Link */}
-                            <Link
+                            {!isAdmin && (<Link
                                 href="/cart"
                                 className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 group"
                             >
@@ -223,7 +302,7 @@ export default function Header() {
                                         {getTotalItems()}
                                     </span>
                                 )}
-                            </Link>
+                            </Link>)}
 
                             {/* User Menu */}
                             {status === 'loading' ? (
@@ -232,7 +311,7 @@ export default function Header() {
                                 <div className="relative">
                                     <button
                                         onClick={() => setShowUserMenu(!showUserMenu)}
-                                        className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                                        className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 hover:cursor-pointer transition-colors duration-200"
                                     >
                                         {session.user?.image ? (
                                             <div className="w-8 h-8 relative rounded-full overflow-hidden">
@@ -306,7 +385,7 @@ export default function Header() {
                                 <div className="flex items-center space-x-2">
                                     <Link
                                         href="/auth/signin"
-                                        className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                                        className="text-blue-600 py-2 hover:text-blue-400 transition-colors duration-200 transform hover:scale-105"
                                     >
                                         Sign In
                                     </Link>
@@ -554,7 +633,7 @@ export default function Header() {
                                                     signOut()
                                                     handleMobileMenuClose()
                                                 }}
-                                                className="text-red-600 hover:text-red-700 text-sm font-medium transition-colors duration-200"
+                                                className="text-red-600 hover:text-red-700 text-sm font-medium transition-colors duration-200 hover:cursor-pointer"
                                             >
                                                 Sign out
                                             </button>
@@ -564,7 +643,7 @@ export default function Header() {
                                     <div className="flex justify-center space-x-4">
                                         <Link
                                             href="/auth/signin"
-                                            className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                                            className="text-blue-600 py-2 hover:text-blue-400 transition-colors duration-200 transform hover:scale-105"
                                             onClick={handleMobileMenuClose}
                                         >
                                             Sign In
