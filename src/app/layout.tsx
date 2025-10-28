@@ -6,6 +6,7 @@ import { Providers } from './providers'
 import NextTopLoader from 'nextjs-toploader'
 import Header from './components/Header'
 import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -90,6 +91,7 @@ export default function RootLayout({
             <Header />
             <main className="flex-1">
               {children}
+              <Analytics />
             </main>
             {/* Cart sidebar */}
             <CartSidebar />
